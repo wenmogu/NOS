@@ -137,7 +137,13 @@ function databaseModify() {
                 if (error) throw error; 
                 console.log(results);
                 });      
-                callback(true);
+
+                connection.query('select * from ?? where RoomNumber=?', [info.table, Room], function(error, results, fields) {
+                  if(error) throw error;
+                  callback(results);
+                })
+                // callback(true);
+
             } else {
               console.log("nvrBookedBefore fails");
               callback(false);

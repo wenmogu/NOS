@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><% Successful Booking %></title>
+    <title> Successful Booking </title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
@@ -9,9 +9,10 @@
   <p>Booking info: </p>
   <p>Name: <%= profile.displayName %></p>
   <p>Email: <%= profile.emails[0].value %></p>
-  <p>Room:<%= content. roomnumber%></p>
-  <p>Status:<%= table[0].Status %> </p>
-  <p>Time:<%= table[0].TimeModified %></p>
+  <p>Room Number: <%= content.roomnumber %></p>
+  <p>Status: <%= table[0].Status %> </p>
+  <p>Time Booked: <%= table[0].TimeModified %></p>
+
 
     <button onclick="tz()">logout</button>
     <script>
@@ -25,6 +26,14 @@
     <script>
     function cd(){
         window.location.href='/cancelBookingConfirm';
+
+    }
+    </script>
+
+    <button onclick="v()">view booking info</button>
+    <script>
+    function v(){
+        window.location.href='/viewBooking';
 
     }
     </script>
