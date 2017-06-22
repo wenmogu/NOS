@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><% Successful Booking %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+  <p>Congratulation! You hv grabbed ur room. </p>
+  <p>Booking info: </p>
+  <p>Name: <%= profile.displayName %></p>
+  <p>Email: <%= profile.emails[0].value %></p>
+  <p>Room:<%= content. roomnumber%></p>
+  <p>Status:<%= table[0].Status %> </p>
+  <p>Time:<%= table[0].TimeModified %></p>
+
+    <button onclick="tz()">logout</button>
+    <script>
+    function tz(){
+        window.location.href='/logout';
+
+    }
+    </script>
+
+    <button onclick="cd()">cancel booking</button>
+    <script>
+    function cd(){
+        window.location.href='/cancelBookingConfirm';
+
+    }
+    </script>
+    
+  </body>
+</html>

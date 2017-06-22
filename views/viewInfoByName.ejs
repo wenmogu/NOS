@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello,<%= profile.displayName %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+  <div>
+    <button onclick="cb()">cancel booking</button>
+    <script>
+      function cb(){
+          window.location.href='/cancelBookingConfirm';
+      }
+    </script>
+  </div>
+
+  <div>
+
+    <h1><%= profile.displayName %></h1>
+    <p>Welcome to viewBooking page, <%= profile.displayName %></p>
+    <% for(var i=0;i < table.length; i++) {%>
+    <p>Room:<%= table[i].RoomNumber %></p>
+    Status: <p><%= table[i].Status %> </p>
+    Time: <p><%= table[i].TimeModified %></p>
+    	<br>
+    <% } %>
+    <button onclick="b()">booking</button>
+    <script>
+        function b(){
+          window.location.href='/booking';
+        }
+    </script>
+
+    </div>
+
+    <div>
+
+    <button onclick="tz()">logout</button>
+    <script>
+    function tz(){
+        window.location.href='/logout';
+
+    }
+    </script>
+
+    </div>
+
+  </body>
+</html>

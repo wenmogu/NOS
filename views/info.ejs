@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hello,</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+
+    <p>Welcome to Booking Info page, </p>
+    <% for(var i=0;i < table.length; i++) {%>
+    <p>Room:<%= table[i].RoomNumber %></p>
+    <p>Status:<%= table[i].Status %> </p>
+    <p>Time:<%= table[i].TimeModified %></p>
+    	<br>
+    <% } %>
+  </body>
+</html>
