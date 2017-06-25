@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Hello,</title>
+
+    <title>Hello, </title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body>
 
-    <p>Welcome to Booking Info page, </p>
+  <!-- <body onload='e();'> -->
+  <body>
+    <h2>Welcome to Booking Info page, </h2>
+    <h6 id="displayName" > <%=profile.displayName %> </h6>
     <% for(var i=0;i < table.length; i++) {%>
-    <p>Room:<%= table[i].RoomNumber %></p>
-    <p>Status:<%= table[i].Status %> </p>
-    <p>Time:<%= table[i].TimeModified %></p>
-    	<br>
+    <br/>   <br/>
+    <div>
+    <input type="text" id="<%= i %>" value='<%=table[i].RoomNumber%>'  disabled>
+    <p id="Status"> Status:<%= table[i].Status %> </p>
+    <p id="TimeModified"> Time:<%= table[i].TimeModified %> </p>
+
+   
+    <button onclick="tz(<%= i %>)">book</button>
+    <script>
+      function tz(c) {
+        var roomnumber = document.getElementById(c).value;
+        // window.location.href = '/booking?username=' + username + '&room='roomnumber;
+        window.location.href ='/booking?room=' + roomnumber;
+      }
+    </script>
+    </div>
     <% } %>
+
+    <br/> <br/>
+
+    <% if (profile.displayName == "guest") { %>
+    <% include login.ejs %>
+    <% } else{%>
+    <% ; %>
+    <% } %>
+
+
   </body>
 </html>

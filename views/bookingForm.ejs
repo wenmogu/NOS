@@ -1,15 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+<body>
 <form action="/manageBooking" method="POST">
     <fieldset>
         <label>Booking Form </label> <br/>
         User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
         Email: <input type="text" name='useremail' value="<%=profile.emails[0].value%>" disabled> <br/>
-
 		Room Number <select name="roomnumber">
-		  <%for (var i= 0; i < rooms.length; i++) {%>  
-		  	<option value='<%=rooms[i].RoomNumber%>'><%=rooms[i].RoomNumber%> </option>
+
+		  <%for (var i= 0; i < rooms.length; i++) { %>  
+
+		  	<option id="select" ><%=rooms[i].RoomNumber%> </option>
 		  <%} %>
 		</select> <br/>
+
+<!--         <script type='text/javasript'>
+             var index = window.location.search.indexOf("=");
+             if(index < 0) {
+                ;
+             } else {
+                var str = window.location.search.split("=")[1];
+                document.getElementById("select").value = str;
+                document.getElementById("select").innerHTML = index;
+             }     
+        </script> -->
+       
         Reason: <input type="text" name="reason"/><br/>
         <input type="submit" value="submit"/>
     </fieldset>
 </form>
+</body>
+</html>

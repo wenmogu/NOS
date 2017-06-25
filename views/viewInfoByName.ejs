@@ -24,11 +24,12 @@
     Time: <p><%= table[i].TimeModified %></p>
     	<br>
     <% } %>
-    <button onclick="b()">booking</button>
+    <button onclick="b()">book</button>
     <script>
         function b(){
           window.location.href='/booking';
         }
+
     </script>
 
     </div>
@@ -39,6 +40,14 @@
     <script>
     function tz(){
         window.location.href='/logout';
+
+    }
+    </script>
+
+    <button onclick="z()">view general info</button>
+    <script>
+    function z(){
+        window.location.href='/info';
 
     }
     </script>

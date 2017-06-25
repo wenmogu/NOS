@@ -8,9 +8,9 @@ var Wenmogu = new db();
 //var a = Wenmogu.isEmpty("101",function (result) {
 //	console.log(result);
 //});
-//Wenmogu.viewInfoByName("wen", function(results) {
-//	console.log(results);
-//});
+Wenmogu.viewInfoByName("wen", function(results) {
+	console.log(results);
+});
 
  // Wenmogu.isEmpty("110",function (result) {
  // 	console.log(result);
@@ -24,10 +24,10 @@ var Wenmogu = new db();
 // 	//console.log();
 // 	console.log(result);
 // });
-Wenmogu.cancel("Wen", null, "105", function(result) {
-	console.log("%%%%%%" + result);
+// Wenmogu.cancel("Wen", null, "105", function(result) {
+// 	console.log("%%%%%%" + result);
 
-});
+// });
 
 // console.log(Wenmogu.isEmpty("110"));
 //Wenmogu.emptyRoomNumber(function(result) {

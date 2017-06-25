@@ -28,7 +28,13 @@ module.exports = function (app,passport) {
   // routes 
   app.get("/info", function (req, res) { // to the general room info page, where you dont need to log in to view 
     db_manager.totalTable(function (result) {
-      res.render('info.ejs', { profile : req.user, table: result});
+      console.log("###########@@@@@@@@@@@@@@" + typeof(req.user));
+      if (JSON.stringify(req.user) == undefined) {
+        res.render('info.ejs', { profile: {displayName:"guest"}, table: result});
+      } else {
+        console.log("sadfsadfsadfsdfsdfsadfasdfasdfsadfs");
+        res.render('info.ejs', { profile : req.user, table: result, content: 'login.ejs'});
+      }
     });
   })
 
@@ -44,7 +50,6 @@ module.exports = function (app,passport) {
       res.render("bookingForm.ejs", {profile: req.user, rooms: result});
     })
   });
-
 
   app.get("/cancelBookingConfirm", isLoggedIn, function (req,res) { //to the booking page, login to book a room
     db_manager.bookedRoomNumber(req.user.displayName, req.user.emails[0].value, function (result) {
