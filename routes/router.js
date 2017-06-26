@@ -30,7 +30,7 @@ module.exports = function (app,passport) {
     db_manager.totalTable(function (result) {
       console.log("###########@@@@@@@@@@@@@@" + typeof(req.user));
       if (JSON.stringify(req.user) == undefined) {
-        res.render('info.ejs', { profile: {displayName:"guest"}, table: result});
+        res.render('info.ejs', { profile: {displayName:"guest"}, table: result, array:[]});
       } else {
         console.log("sadfsadfsadfsdfsdfsadfasdfasdfsadfs");
         res.render('info.ejs', { profile : req.user, table: result, content: 'login.ejs'});
@@ -45,9 +45,14 @@ module.exports = function (app,passport) {
     });
   });
 
-  app.get("/booking", isLoggedIn, function (req,res) { //to the booking page, login to book a room
+  app.get("/booking", isLoggedIn, function (req,res) {
+    console.log("---------------------------------------------------------------");
+    console.log(req) //to the booking page, login to book a room
+    console.log("---------------------------------------------------------------");
+    var arg = req.url.split("=")[1];
+    console.log("request for " + arg);
     db_manager.emptyRoomNumber(function (result) {
-      res.render("bookingForm.ejs", {profile: req.user, rooms: result});
+      res.render("bookingForm.ejs", {profile: req.user, rooms: result, bookedRoom: arg});
     })
   });
 

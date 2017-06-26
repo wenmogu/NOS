@@ -8,9 +8,9 @@ var Wenmogu = new db();
 //var a = Wenmogu.isEmpty("101",function (result) {
 //	console.log(result);
 //});
-Wenmogu.viewInfoByName("wen", function(results) {
-	console.log(results);
-});
+// Wenmogu.viewInfoByName("wen", function(results) {
+// 	console.log(results);
+// });
 
  // Wenmogu.isEmpty("110",function (result) {
  // 	console.log(result);
@@ -30,8 +30,8 @@ Wenmogu.viewInfoByName("wen", function(results) {
 // });
 
 // console.log(Wenmogu.isEmpty("110"));
-//Wenmogu.emptyRoomNumber(function(result) {
-//	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
-//})
+Wenmogu.emptyRoomNumber(function(result) {
+	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
+})
 //Wenmogu.totalNumber();
 

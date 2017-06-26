@@ -12,8 +12,11 @@
 		Room Number <select name="roomnumber">
 
 		  <%for (var i= 0; i < rooms.length; i++) { %>  
-
-		  	<option id="select" ><%=rooms[i].RoomNumber%> </option>
+                <% if (rooms[i].RoomNumber == bookedRoom) {%>
+		  	   <option id="select<%=i %>" selected> <%=rooms[i].RoomNumber%> </option>
+                <% } else { %>
+                <option id="selected<%=i %>" hidden> <%=rooms[i].RoomNumber%> </option>
+                <% } %>
 		  <%} %>
 		</select> <br/>
 

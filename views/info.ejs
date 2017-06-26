@@ -4,9 +4,11 @@
 
     <title>Hello, </title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+
   </head>
 
-  <!-- <body onload='e();'> -->
+
+
   <body>
     <h2>Welcome to Booking Info page, </h2>
     <h6 id="displayName" > <%=profile.displayName %> </h6>
@@ -14,11 +16,23 @@
     <br/>   <br/>
     <div>
     <input type="text" id="<%= i %>" value='<%=table[i].RoomNumber%>'  disabled>
-    <p id="Status"> Status:<%= table[i].Status %> </p>
-    <p id="TimeModified"> Time:<%= table[i].TimeModified %> </p>
+     <p>Status: </p>
+     <% if(table[i].Status != 0) { %>
+        <p id="Status<%= i %>" style="color:red"> Unavailable for booking</p>
+     <% } else { %>
+        <p id="Status<%= i %>" style="color:green"> Available for booking</p>
+     <% } %>
+     <p>Time:</p>
+     <p id="TimeModified<%= i %>"> <%= table[i].TimeModified %> </p>
 
-   
-    <button onclick="tz(<%= i %>)">book</button>
+     <% if(table[i].Status==0){ %>
+     <button onclick="location.href='/booking?room=<%= table[i].RoomNumber %>'">Book</button>
+     <% } %> 
+
+
+
+     <!-- the following is the version with book button under booked room but gives alert when trying to book -->
+    <!-- <button id="button<%= i %>" onclick="statuss(<%= i %>)" >book</button>
     <script>
       function tz(c) {
         var roomnumber = document.getElementById(c).value;
@@ -26,8 +40,26 @@
         window.location.href ='/booking?room=' + roomnumber;
       }
     </script>
+
+    <script>
+      function click() {
+        alert("This room has been booked!");
+      }
+
+      function statuss(c) {
+        var stat = document.getElementById("Status" + c).innerHTML;
+        if(stat != 0) {
+          document.getElementById("button" + c).onclick = click();
+        } else {
+          document.getElementById("button" + c).onclick = tz(c);
+        }
+      }
+    </script> -->
+
     </div>
     <% } %>
+
+
 
     <br/> <br/>
 
@@ -40,3 +72,4 @@
 
   </body>
 </html>
+ 
