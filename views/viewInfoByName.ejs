@@ -29,13 +29,11 @@
     Time: <p><%= table[i].TimeModified %></p>
     	<br>
     <% } %>
-    <button onclick="b()">book</button>
-    <script>
-        function b(){
-          window.location.href='/booking';
-        }
 
-    </script>
+    <% if (table.length == 0) { %>
+      <button onclick="location.href='/booking'"> book </button>
+    <% } %>
+
 
     </div>
 
