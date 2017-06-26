@@ -24,14 +24,14 @@ var Wenmogu = new db();
 // 	//console.log();
 // 	console.log(result);
 // });
-// Wenmogu.cancel("Wen", null, "105", function(result) {
-// 	console.log("%%%%%%" + result);
+Wenmogu.book("Wen", "e23423143214@gmail.com", "105", function(result) {
+	console.log("%%%%%%" + result);
 
-// });
+});
 
 // console.log(Wenmogu.isEmpty("110"));
-Wenmogu.emptyRoomNumber(function(result) {
-	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
-})
+// Wenmogu.emptyRoomNumber(function(result) {
+// 	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
+// })
 //Wenmogu.totalNumber();
 

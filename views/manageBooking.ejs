@@ -10,7 +10,11 @@
   <p>Name: <%= profile.displayName %></p>
   <p>Email: <%= profile.emails[0].value %></p>
   <p>Room Number: <%= content.roomnumber %></p>
-  <p>Status: <%= table[0].Status %> </p>
+  <p>Status:  <% if(table[0].Status != 0) { %>
+        <p id="Status" style="color:red"> You've booked this room</p>
+     <% } else { %>
+        <p id="Status" style="color:green"> Available for booking</p>
+     <% } %></p>
   <p>Time Booked: <%= table[0].TimeModified %></p>
 
 

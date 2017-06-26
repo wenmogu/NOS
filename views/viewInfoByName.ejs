@@ -20,7 +20,12 @@
     <p>Welcome to viewBooking page, <%= profile.displayName %></p>
     <% for(var i=0;i < table.length; i++) {%>
     <p>Room:<%= table[i].RoomNumber %></p>
-    Status: <p><%= table[i].Status %> </p>
+    Status: 
+     <% if(table[i].Status != 0) { %>
+        <p id="Status<%= i %>" style="color:red"> You've booked this room</p>
+     <% } else { %>
+        <p id="Status<%= i %>" style="color:green"> Available for booking</p>
+     <% } %>
     Time: <p><%= table[i].TimeModified %></p>
     	<br>
     <% } %>

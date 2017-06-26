@@ -11,7 +11,16 @@
 
   <body>
     <h2>Welcome to Booking Info page, </h2>
-    <h6 id="displayName" > <%=profile.displayName %> </h6>
+    <h3 id="displayName" > <%=profile.displayName %> </h3>
+    <div>
+    <% if (profile.displayName == "guest") { %>
+    <% include login.ejs %>
+    <% } else{%>
+    <% ; %>
+    <% } %>
+    </div>
+    <br/> <br/>
+    
     <% for(var i=0;i < table.length; i++) {%>
     <br/>   <br/>
     <div>
@@ -61,13 +70,7 @@
 
 
 
-    <br/> <br/>
-
-    <% if (profile.displayName == "guest") { %>
-    <% include login.ejs %>
-    <% } else{%>
-    <% ; %>
-    <% } %>
+    
 
 
   </body>
