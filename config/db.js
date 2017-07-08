@@ -16,10 +16,9 @@ var connection = mysql.createConnection(info);
 
 function databaseModify() {
   isEmpty = function (Room,callback) {
-    ///connection.query(util.format('select Status from %s where RoomNumber=%s',info.table,Room), function (error, results, fields) {
     connection.query('select ?? from ?? where RoomNumber=?',["Status", info.table,Room], function (error, results, fields) {
   	  if (error) throw error; 
-      console.log("^^^^^^^^^^^^^^^^^^66" +  results);
+      console.log("^^^^^^^^^^^^^^^^^^66" +  JSON.stringify(results));
       callback(results);
     });
   }
@@ -71,7 +70,6 @@ function databaseModify() {
 
 
   this.viewInfoByName = function (name,callback) {
-    //connection.query(util.format('select * from %s where Name=%s', info.table, name), function (error, results, fields) {
   	connection.query('select * from ?? where Name=?',[info.table,name], function (error, results, fields) {  
       if (error) throw error; 
       console.log(results); 
@@ -79,7 +77,6 @@ function databaseModify() {
     });
   }
   this.totalTable = function (callback) {
-    //connection.query(util.format('select * from %s',info.table), function (error, results, fields) {
     connection.query('select * from ??',[info.table], function (error, results, fields) {  
   	  if (error) throw error; 
       console.log(results);
@@ -88,7 +85,6 @@ function databaseModify() {
   }
 
   this.totalNumber = function (callback) {
-    //connection.query(util.format('select count(*) from %s',info.table), function (error, results, fields) {
     connection.query('select count(*) from ??',[info.table], function (error, results, fields) {  
   	  if (error) throw error; 
       console.log(results);
@@ -97,7 +93,6 @@ function databaseModify() {
   }
 
   this.emptyRoomNumber = function (callback) {
-    //connection.query(util.format('select count(*) from %s where Status = 0',info.table), function (error, results, fields) {
     connection.query('select ?? from ?? where Status = 0',["RoomNumber",info.table], function (error, results, fields) {  
   	  if (error) throw error; 
       console.log(results);
@@ -126,13 +121,11 @@ function databaseModify() {
                 console.log(results);  
                 });
                 //Email
-                //connection.query(util.format('update %s set Email="%s" where RoomNumber="%s"',info.table,email,Room), function (error, results, fields) {
                 connection.query('update ?? set Email=? where RoomNumber=?',[info.table,email,Room], function (error, results, fields) {
                 if (error) throw error; 
                 console.log(results);  
                 });
                 //Name
-                //connection.query(util.format('update %s set Name="%s" where RoomNumber="%s"',info.table,name,Room), function (error, results, fields) {
                 connection.query('update ?? set Name=? where RoomNumber=?',[info.table,name,Room], function (error, results, fields) {
                 if (error) throw error; 
                 console.log(results);
@@ -179,13 +172,11 @@ function databaseModify() {
             console.log(results);  
             });
             //Email
-            //connection.query(util.format('update %s set Email=NULL where RoomNumber="%s"',info.table,Room), function (error, results, fields) {
             connection.query('update ?? set Email=NULL where RoomNumber=?',[info.table,Room], function (error, results, fields) {
             if (error) throw error; 
             console.log(results);  
             });
             //Name
-            //connection.query(util.format('update %s set Name=NULL where RoomNumber="%s"',info.table,Room), function (error, results, fields) {
             connection.query('update ?? set Name=NULL where RoomNumber=?',[info.table,Room], function (error, results, fields) {
             if (error) throw error; 
             console.log(results);  
