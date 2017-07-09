@@ -25,9 +25,9 @@ module.exports = function (passport) {
       profile: true
     },
     function(identifier, profile, done) {
-      console.log("profile: " + JSON.stringify(profile));
-      console.log("identifier: " + identifier);
-      //profile.NetsID = identifier
+      console.log("profile: " + JSON.stringify(profile)); //{"displayName":"Wen Xin","emails":[{"value":"e0052753@u.nus.edu"}],"name":{"familyName":"","givenName":""}}
+      console.log("identifier: " + identifier); //https://openid.nus.edu.sg/e0052753
+      profile.NusNetsID = identifier.split("/")[3];
       return done(null, profile);
     // #for further usage
     // User.findOrCreate({ openId: identifier }, function(err, user) {

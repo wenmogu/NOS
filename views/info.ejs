@@ -13,6 +13,22 @@
     <h2>Welcome to Booking Info page, </h2>
     <h3 id="displayName" > <%=profile.displayName %> </h3>
     <div>
+      <button onclick="cb()">View My Booking Info</button>
+      <script>
+        function cb(){
+            window.location.href='/viewBooking';
+        }
+      </script>
+    </div>
+    <div>
+      <button onclick="b()">Logout</button>
+      <script>
+        function b(){
+            window.location.href='/logout';
+        }
+      </script>
+    </div>
+    <div>
     <% if (profile.displayName == "guest") { %>
     <% include login.ejs %>
     <% } else{%>
@@ -34,9 +50,15 @@
      <p>Time:</p>
      <p id="TimeModified<%= i %>"> <%= table[i].TimeModified %> </p>
 
-     <% if(table[i].Status==0){ %>
-     <button onclick="location.href='/booking?room=<%= table[i].RoomNumber %>'">Book</button>
-     <% } %> 
+     <% if (userBooking.length == 0) { %>
+       <% if(table[i].Status==0){ %>
+       <button onclick="location.href='/booking?room=<%= table[i].RoomNumber %>'">Book</button>
+       <% } %>       
+     <% } else if (userBooking.length != 0) { %>
+       <button onclick="location.href='/booking?room=<%= table[i].RoomNumber %>'" disabled>Book</button> 
+     <% } %>
+
+
 
 
 
