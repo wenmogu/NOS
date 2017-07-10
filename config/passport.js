@@ -1,4 +1,3 @@
-
 var OpenIDStrategy = require('passport-openid').Strategy;
 //var LocalStrategy = require('passport-local').Strategy;
 

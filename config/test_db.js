@@ -42,16 +42,26 @@ var moguzu = new Groupdb();
 // 		;
 // 	}
 // });
+moguzu.UserSendEmail("e0032334", function(b) {
+    if(b == true) {
+      console.log("woohoo");
+    } else {
+      console.log(":(((((((((((");
+    }
+  });
 
-moguzu.UserRegistered("e0052753", function(id, results, boo){console.log(boo);});
-
-moguzu.UserSendEmail("e0052753", function(b) {
-	if(b == true) {
-		console.log("woohoo");
-	} else {
-		console.log(":(((((((((((");
-	}
-})
+// moguzu.UserRegistered("e0052753", function(id, results, boo){console.log(boo);});
+for(var i = 0; i < 9; i++) {
+  setTimeout(function() {
+  moguzu.UserSendEmail("e0032334", function(b) {
+  	if(b == true) {
+  		console.log("woohoo");
+  	} else {
+  		console.log(":(((((((((((");
+  	}
+  })
+}, 10000);
+}
 // console.log(Wenmogu.isEmpty("110"));
 // Wenmogu.emptyRoomNumber(function(result) {
 // 	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
@@ -88,3 +98,27 @@ add user to mailOptions
   command: 'AUTH PLAIN' }
 :(((((((((((
  */
+
+
+// const nodemailer = require ('nodemailer');
+// var mailTransport=nodemailer.createTransport({
+//     service:'Gmail',
+//     auth: {
+//         user : 'jlinswenmogu@gmail.com',
+//         pass : 'Fattypiggy123',
+//     }
+// });
+
+// mailTransport.sendMail({
+//   from: ' "whoisthats" <kris@krisd3v.com>',
+//         to : "mcshuo@vip.qq.com",   //user@gmail.com
+//         subject : 'Hello',
+//         text: "Hello How do u do ?",
+//     },function(err,info){
+//       if(err){
+//         console.log('Unable to send the mail :'+err.message);
+//       }
+//       else{
+//         console.log('Message response : '+info.response);
+//       }
+//     });

@@ -23,16 +23,16 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'wen.xin.2014@vjc.sg',
-    pass: 'victoria2014'
+    user: 'jlinswenmogu@gmail.com',
+    pass: '**************'
   }
 });
 
 var mailOptions = {
-  from: 'wen.xin.2014@vjc.sg',
+  from: 'jlinswenmogu@gmail.com',
   to: "to be updated",
-  subject: 'Sending Email using Node.js',
-  text: 'That was easy lol!'
+  subject: '徐老师快写css',
+  text: '加油加油！'
 };
 
 //Group_info: NUSNETSID1(first member),NUSNETSID2, NUSNETSID3, NUSNETSID4, NUSNETSID5, GROUPNAME(string), PASSWORD(hashed)
@@ -248,12 +248,13 @@ function dbGroupandUser() {
 
 	this.UserSendEmail = function(id, callback) {
 		UserSendEmailPart1(id, function(mO) {
+			console.log("mO: " + JSON.stringify(mO));
 			transporter.sendMail(mO, function(err, info) {
 				if (err) {
 					console.log(err);
 					callback(false);
 				} else {
-					console.log(info);
+					console.log("???????????" + info);
 					callback(true);
 				}
 			});
