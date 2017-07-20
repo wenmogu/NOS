@@ -6,6 +6,28 @@ var gb = require('./db_groupBooking');
 var user = new Groupdb();
 var groupBooking = new gb();
 
+// user.IfGroupAlrExist("1338", function(name, boo, result) {
+//   console.log(boo);
+//   console.log(result);
+// })
+
+// user.IfGroupComplete('1338', function(name, boo) {
+//   console.log(boo);
+//   console.log(name);
+// })
+
+// user.IfIdAlrAdded('e0032334', function(id, arr, boo) {
+//   console.log(id);
+//   console.log(arr);
+//   console.log(boo);
+// })
+
+user.registerID('moguempire', 'e0052753', function(name, id, boo) {
+  console.log(name);
+  console.log(id);
+  console.log(boo);
+})
+
 // groupBooking.groupBook('woohoo', '23 07 2017', '104', '10TO12', function(boo) {
 //   console.log(boo);
 // })
@@ -29,9 +51,9 @@ var groupBooking = new gb();
 //     console.log("-------------------------------");
 // })
 
-groupBooking.groupBookingState("moguempire", function(arr) {
-  console.log(JSON.stringify(arr));
-})
+// groupBooking.groupBookingState("moguempire", function(arr) {
+//   console.log(JSON.stringify(arr));
+// })
 
 /*
 groupBooking.allTimeslotsFor5Days(function(ar) {

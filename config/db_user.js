@@ -69,7 +69,7 @@ function dbGroupandUser() {
 		});
 	}
 
-	this.IfGroupIsComplete = function(name, callback) { //precondition: the group is alr registered
+	this.IfGroupComplete = function(name, callback) { //exactly same as IfGroupIsComplete, used externally
 		connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
 			console.log(results);
 			if (err) throw err;
@@ -86,28 +86,61 @@ function dbGroupandUser() {
 		});
 	}
 
-	IfIdAlrAddedPart1 = function(id, arr, callback) {//arr is an empty array 
-			for (var i = 1; i <= 5; i++) {
-				connection.query("select * from ?? where NUSNETSID" + i + "=" + "?", [Groupinfo.table, id], function(err, results) {
-					console.log(JSON.stringify(results));
-					if(err) {
-						throw err;
-					} else if (results.length == 0) {
-						;
-					} else {//[{"NUSNETSID1":"e0052753"},{"NUSNETSID1":"a"},{"NUSNETSID1":"e0052753"}]
-						for (var u = 0; u < results.length; u++) {
-							arr.push(results[u]["GROUPNAME"]);
-							console.log("array: " + arr);
-						}
-					}
-				});
+	IfGroupIsComplete = function(name, callback) { //precondition: the group is alr registered
+		connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
+			console.log(results);
+			if (err) throw err;
+			if (results.length == 0) {
+				callback(name, null); //group does not even exist
+			} else if (results[0].NUSNETSID1 == "none" ||
+				results[0].NUSNETSID2 == "none" ||
+				results[0].NUSNETSID3 == "none" ||
+				results[0].NUSNETSID4 == "none" ) {
+				callback(name, false); //group is not complete, cannt make a booking 
+			} else {
+				callback(name, true); //group is complete, can make a booking
 			}
-			setTimeout(function(){callback(id, arr);}, 500);
-			//setTimeout(function(){console.log("*************************** " + arr+ " **************************");}, 1000);
+		});
+	}
+
+	// IfIdAlrAddedPart1 = function(id, arr, callback) {//arr is an empty array 
+	// 		for (var i = 1; i <= 5; i++) {
+	// 			connection.query("select * from ?? where NUSNETSID" + i + "=" + "?", [Groupinfo.table, id], function(err, results) {
+	// 				console.log(JSON.stringify(results));
+	// 				if(err) {
+	// 					throw err;
+	// 				} else if (results.length == 0) {
+	// 					;
+	// 				} else {//[{"NUSNETSID1":"e0052753"},{"NUSNETSID1":"a"},{"NUSNETSID1":"e0052753"}]
+	// 					for (var u = 0; u < results.length; u++) {
+	// 						arr.push(results[u]["GROUPNAME"]);
+	// 						console.log("array: " + arr);
+	// 					}
+	// 				}
+	// 			});
+	// 		}
+	// 		setTimeout(function(){callback(id, arr);}, 500);
+	// 		//setTimeout(function(){console.log("*************************** " + arr+ " **************************");}, 1000);
+	// }
+
+	IfIdAlrAddedPart1 = function(id, emptyarr, i, callback) {//id, [], 1, callback
+		if(i > 5) {
+			callback(id, emptyarr);
+		} else {
+			connection.query("select * from ?? where NUSNETSID" + i + "=" + '?', [Groupinfo.table, id], function(err, results) {
+				if(err) throw err;
+				if (results.length == 0) {
+					IfIdAlrAddedPart1(id, emptyarr, i + 1, callback);
+				} else {
+					emptyarr.push(results[0]["GROUPNAME"]);
+					IfIdAlrAddedPart1(id, emptyarr, i + 1, callback);
+				}
+			}) 
+		}
 	}
 
 	IfIdAlrAdded = function(id, callback) {
-		IfIdAlrAddedPart1(id, [], function(idd, arr) {
+		IfIdAlrAddedPart1(id, [], 1, function(idd, arr) {
 			if (arr.length == 0) {
 				callback(id, arr, false);
 			} else {
@@ -132,7 +165,7 @@ function dbGroupandUser() {
 	//precondition: the group alr exists
 	//precondition: run this together with addGroupToUserInfo to add the groupname into the userinfo table
 	//postcondition: the id's might be added multiple times to the same grp
-	this.registerID = function(name, id, callback) {
+	this.registerID = function(name, id, callback) { //name is group name!!!
 		IfIdAlrAdded(id, function(idd, resul, booo) {
 			if(booo == true) {
 				console.log("this id has alr been registered in groups with group names " + resul);
@@ -191,21 +224,6 @@ function dbGroupandUser() {
 					callback(results);
 		});
 	}
-	//used in Group login (maynot be useful)
-	// this.authenticateGroup = function(name, password, callback) { //callback is done()
-	// 	connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
-	// 		if(err) return callback(err);
-	// 		if(results.length == 0 {
-	// 			// no such username
-	// 			callback(null, false);
-	// 		} else if (results[0].PASSWORD != password) {
-	// 			// invalid password
-	// 			callback(null, false);
-	// 		} 
-
-	// 		callback(null, results[0]);
-	// 	})
-	// }
 /* _______________________________________________________User methods __________________________________________________________*/
 	//precondition: the user tries to login, and NUS authenticates the request and fetched the profile of the user
 	//postcondition: the webpage check if this user if from RVRC: if true, allow access; if false, deny access

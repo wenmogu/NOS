@@ -38,7 +38,7 @@ create table Group_info (
 	-- PASSWORD varchar(225) not null,
 	primary key(GROUPID)
 );
-alter table Group_info auto_increment=1700;
+alter table Group_info auto_increment=1701;
 
 A list of all_user_info
 create table User_info (
@@ -59,6 +59,7 @@ create table Group_record (
 	SLOTEND time not null,
 	DECISIONTIME datetime not null default NOW()
 );
+insert into Group_record (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", '2017-3-23', '101', '100000', '120000');
 
 A list of all the booking decisions.
 create table Book_state (
@@ -69,6 +70,8 @@ create table Book_state (
 	SLOTEND time not null,
 	DECISIONTIME datetime not null default NOW()
 )
+
+insert into Book_state (GROUPNAME, ROOMNUMBER, DATE, SlOTSTART, SLOTEND) values ("moguempire", "101", "2017-04-14", 80000, 100000);
 
 create table RVRC_User (
 	NUSNETSID varchar(225) not null,
@@ -120,7 +123,7 @@ Update Room_record1 set CREATETIME = DATE_ADD(CREATETIME, interval 5 day);
 
 insert into RVRC_User (NUSNETSID, NAME) values ("e0032334", "YAP JIT WU");
 insert into User_info (USERNAME, NUSNETSID, GROUPNAME, EMAIL) values ("YAP JIT WU", "e0032334", "moguempireee", "e0032334@u.nus.edu");
-insert into Group_info (GROUPNAME, NUSNETSID1) values ("moguempireee", "e0032334");
+insert into Group_info (GROUPNAME, NUSNETSID1, NUSNETSID2, NUSNETSID3, NUSNETSID4) values ("moguempire", "e0032334", "a", "b", "c");
 -- YAP JIT WU is a registered user in a group 
 ALTER TABLE Persons
 ALTER COLUMN City SET DEFAULT 'SANDNES'
