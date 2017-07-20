@@ -22,12 +22,14 @@ var groupBooking = new gb();
 //   console.log(boo);
 // })
 
-user.registerID('moguempire', 'e0052753', function(name, id, boo) {
-  console.log(name);
-  console.log(id);
-  console.log(boo);
+// user.registerID('moguempire', 'e0052753', function(name, id, boo) {
+//   console.log(name);
+//   console.log(id);
+//   console.log(boo);
+// })
+groupBooking.allEmptyTimeslotsFor5Days(function(arr) {
+  console.log(JSON.stringify(arr));
 })
-
 // groupBooking.groupBook('woohoo', '23 07 2017', '104', '10TO12', function(boo) {
 //   console.log(boo);
 // })

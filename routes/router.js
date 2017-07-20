@@ -88,12 +88,9 @@ module.exports = function (app,passport) {
     });
   });
 
-  // app.get("/viewBooking", isLoggedIn, function (req,res) { //to ur personal booking page, where you need to log in to see ur booking
-  //   db_manager.viewInfoByName(req.user.displayName, function (result) {
-  //     //console.log(JSON.stringify(req.user));//{"displayName":"","emails":[{"value":""}],"name":{"familyName":"","givenName":""}}
-  //     res.render('viewInfoByName.ejs', {profile: req.user, table: result});
-  //   });
-  // });
+  app.get('/info', function(req, res) {})
+
+  
   app.get("/viewBooking", isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(nname, iid, eemail, bboo) {
       if (bboo == true) {
@@ -105,7 +102,7 @@ module.exports = function (app,passport) {
           } else if (boo == true) {
             console.log("i m at viewBooking routing/getUserGroup. This guy is in a group.");
             console.log("printing the booking info by this guy's group");
-            db_book.groupBookingState(grp, function(resul, boo) {
+            db_book.groupBookingState(grp, function(resul, boo) { //resul is the booking schedule for today and the next 5 days.
               if (boo == false) {
                 console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group did not make any booking. ");
                 res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking:false, table:[], groupName:grp});
@@ -255,7 +252,7 @@ module.exports = function (app,passport) {
 
 
 
-  app.get("/booking", isLoggedIn, function (req,res) {
+  app.get("/booking", isLoggedIn, function (req,res) { // dont forget to check again if the intended timeslot is alr booked by someone else; if so, redirect back to info. 
     console.log("---------------------------------------------------------------");
     console.log(req.url); //to the booking page, login to book a room
     console.log("---------------------------------------------------------------");

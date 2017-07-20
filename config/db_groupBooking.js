@@ -336,6 +336,7 @@ function db(){
 	}
 
 	allTimeslotsFor5DaysIter = function(emptyarr, all5DaysArray, i, callback) {//[], [], 5, callback
+
 		if (all5DaysArray.length == 0) {
 			all5Days(function(arr) {
 				allTimeslotsFor5DaysIter(emptyarr, arr, i, callback);
@@ -357,6 +358,7 @@ function db(){
 			callback(arr);
 		})
 	}
+
 
 
 	this.hasGroupBookedAny = function(name, date, callback) {//used externally, same as hasGroupBooked
@@ -398,12 +400,19 @@ function db(){
  		}
  	}
 
- 	this.bookedTimeslot = function(date, callback) {
+ 	bookedTimeslot = function(date, callback) {
  		bookedTimeslotPart1(date, 0, [], function(emptyarr) {
  			callback(emptyarr);
  		})
  	} //[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]
 	
+	this.bookedTimeslotForTheDay = function(date, callback) {//exactly the same as bookedTimeslot
+		bookedTimeslotPart1(date, 0, [], function(emptyarr) {
+ 			callback(emptyarr);
+ 		})
+ 	} //[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]
+	}
+
 	emptyTimeslotPart1 = function(date, x, emptyarr, callback) {//2x + 8, x starts from 0 and ends at 7 (no x = 8)
  		if (x < 7) {
  			var a = (x*2+8)+"TO"+(x*2+10);
@@ -424,11 +433,73 @@ function db(){
  		}
  	}
 
- 	this.emptyTimeslot = function(date, callback) {
+ 	emptyTimeslot = function(date, callback) {
  		emptyTimeslotPart1(date, 0, [], function(emptyarr) {
  			callback(emptyarr);
  		})
  	}
+
+ 	this.emptyTimeslotForTheDay = function(date, callback) {//exactly the same as emptyTimeslot, used externally
+ 		emptyTimeslotPart1(date, 0, [], function(emptyarr) {
+ 			callback(emptyarr);
+ 		})
+ 	}
+
+	allEmptyTimeslotsFor5DaysPart1 = function(emptyarr, the5DaysString, i, callback) {
+		console.log(i);
+		if (i > 0) {
+			emptyTimeslot(the5DaysString[5 - i], function(arr) {
+				emptyarr.push([the5DaysString[5 - i]].concat([arr]));
+				allEmptyTimeslotsFor5DaysPart1(emptyarr, the5DaysString, i-1, callback);
+			})
+		} else {
+			callback(emptyarr);
+		}
+	}
+	
+	this.allEmptyTimeslotsFor5Days = function(callback) {
+		all5Days(function(arr) {
+			allEmptyTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
+				callback(arrr);
+			})
+		})	
+	}
+	// output (same format)
+	// [["20 7 2017",[]],
+	// ["21 7 2017",[]],
+	// ["22 7 2017",[]],
+	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
+	// ["24 7 2017",[]]]
+
+ 	allBookedTimeslotsFor5DaysPart1 = function(emptyarr, the5DaysString, i, callback) {
+		console.log(i);
+		if (i > 0) {
+			bookedTimeslot(the5DaysString[5 - i], function(arr) {
+				emptyarr.push([the5DaysString[5 - i]].concat([arr]));
+				allBookedTimeslotsFor5DaysPart1(emptyarr, the5DaysString, i-1, callback);
+			})
+		} else {
+			callback(emptyarr);
+		}
+	}
+	
+	this.allBookedTimeslotsFor5Days = function(callback) {
+		all5Days(function(arr) {
+			allBookedTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
+				callback(arrr);
+			})
+		})	
+	}
+	// output
+	// [["20 7 2017",[]],
+	// ["21 7 2017",[]],
+	// ["22 7 2017",[]],
+	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
+	// ["24 7 2017",[]]]
+
+
+
+
 	allTimeslotsFor5DaysIter = function(emptyarr, all5DaysArray, i, callback) {//[], [], 5, callback
 		if (all5DaysArray.length == 0) {
 			all5Days(function(arr) {
