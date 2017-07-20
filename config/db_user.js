@@ -18,21 +18,29 @@ var Userinfo = {
   table    : 'User_info'
 }
 
+var RVRCuser = {
+  host     : 'localhost',
+  user     : 'root',
+  password : 'LordMushroom2015',
+  database : 'nus_db',
+  table    : 'RVRC_User'
+}
+
 var nodemailer = require('nodemailer');
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'jlinswenmogu@gmail.com',
-    pass: '**************'
+    pass: '*'
   }
 });
 
 var mailOptions = {
   from: 'jlinswenmogu@gmail.com',
   to: "to be updated",
-  subject: '徐老师快写css',
-  text: '加油加油！'
+  subject: "punishment for ignoring me",
+  text: '!!!'
 };
 
 //Group_info: NUSNETSID1(first member),NUSNETSID2, NUSNETSID3, NUSNETSID4, NUSNETSID5, GROUPNAME(string), PASSWORD(hashed)
@@ -40,6 +48,7 @@ var mailOptions = {
 
 var connection = mysql.createConnection(Groupinfo);
 var connectionUser = mysql.createConnection(Userinfo);
+var connectionRV = mysql.createConnection(RVRCuser);
 
 //results of select from table example: [{"Id":2,"RoomNumber":"102","Name":"Wen Xin","Email":"e0052753@u.nus.edu","Status":1,"TimeModified":"2017-06-26T10:43:55.000Z"}]
 function dbGroupandUser() {
@@ -60,7 +69,7 @@ function dbGroupandUser() {
 		});
 	}
 
-	IfGroupIsComplete = function(name, callback) { //precondition: the group is alr registered
+	this.IfGroupIsComplete = function(name, callback) { //precondition: the group is alr registered
 		connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
 			console.log(results);
 			if (err) throw err;
@@ -77,7 +86,7 @@ function dbGroupandUser() {
 		});
 	}
 
-	IfIdAlrAddedPart1 = function(id, arr, callback) {//arr is an empty array
+	IfIdAlrAddedPart1 = function(id, arr, callback) {//arr is an empty array 
 			for (var i = 1; i <= 5; i++) {
 				connection.query("select * from ?? where NUSNETSID" + i + "=" + "?", [Groupinfo.table, id], function(err, results) {
 					console.log(JSON.stringify(results));
@@ -93,7 +102,7 @@ function dbGroupandUser() {
 					}
 				});
 			}
-			setTimeout(function(){callback(id, arr);}, 1000);
+			setTimeout(function(){callback(id, arr);}, 500);
 			//setTimeout(function(){console.log("*************************** " + arr+ " **************************");}, 1000);
 	}
 
@@ -118,20 +127,10 @@ function dbGroupandUser() {
 		});
 	}
 
-	this.groupBookingRoom = function(name, callback) {
-		IfGroupIsComplete(name, function(namee, boo) {
-			if(boo == false) {
-				console.log("group is incomplete, cannt make a booking!");
-				callback(name, false);
-			} else if (boo == true) {
-				console.log("group is complete: can make a booking.");
-				callback(name, true);
-			}
-		})
-	}
 
 	//precondition: the owner of the id acknowledge by clicking the link on the email and confirming on the confirmation page
 	//precondition: the group alr exists
+	//precondition: run this together with addGroupToUserInfo to add the groupname into the userinfo table
 	//postcondition: the id's might be added multiple times to the same grp
 	this.registerID = function(name, id, callback) {
 		IfIdAlrAdded(id, function(idd, resul, booo) {
@@ -208,20 +207,92 @@ function dbGroupandUser() {
 	// 	})
 	// }
 /* _______________________________________________________User methods __________________________________________________________*/
-	this.UserRegistered = function(id, callback) {
-		connectionUser.query("select * from ?? where NUSNETSID=?", [Userinfo.table, id], function(err, results) {
+	//precondition: the user tries to login, and NUS authenticates the request and fetched the profile of the user
+	//postcondition: the webpage check if this user if from RVRC: if true, allow access; if false, deny access
+	this.isUserFromRVRC = function(id, name, callback) {
+		connectionRV.query("select * from ?? where NUSNETSID=? and NAME=?", [RVRCuser.table, id, name], function(err, results) {
 			if (err) throw err;
 			if (results.length == 0) {
-				console.log("User not registered!");
-				callback(id, false);
+				console.log("USER NOT FROM RVRC");
+				callback(id, name, false);
 			} else {
-				console.log("User registered!");
-				callback(id, true);
+				console.log("USER FROM RVRC.");
+				callback(id, name, true);
 			}
-		})	
+		})
 	}
 
-	UserGetEmailAdd = function(id, callback) {
+	isUserInDB = function(name, id, email, callback) {
+		connectionUser.query("select * from ?? where NUSNETSID=? and USERNAME=?", [Userinfo.table, id, name], function(err, resul) {
+			if (err) throw err;
+			if (resul.length == 0) {
+				console.log("user not in DB yet. adding her later.");// followed by addUserToUserInfo
+				callback(name, id, email, false);
+			} else {
+				console.log("user in DB.");
+				callback(name, id, email, true);
+			}
+		})
+	}
+
+	//i.e. register user into this system, before this user can be added into any group. 
+	this.addUserToUserInfo = function(name, id, email, callback) {
+		isUserInDB(name, id, email, function(namee, idd, emaill, boo) {
+			if(boo == true) {
+				console.log("dont need to add");
+				callback(true);
+			} else if (boo == false) {
+				console.log("need to add");
+				connection.query("insert into ?? (USERNAME, NUSNETSID, EMAIL) values (?, ?, ?)", [Userinfo.table, namee, idd, emaill], function(err, result) {
+					if (err) throw err;
+					console.log(JSON.stringify(result));
+					callback(true);
+				});
+			} else {
+				callback(false);
+			}
+		});
+	}
+
+	this.addGroupToUserInfo = function(grpname, id, name, callback) {//related to Group_info
+		connectionUser.query("update ?? set GROUPNAME=? where NUSNETSID=? and USERNAME=?", [Userinfo.table, grpname, id, name], function(err, resul) {
+			if (err) throw err;
+			console.log("groupname of the user updated.");
+			callback(true);
+		})
+	}
+
+	this.hasUserRegistered = function(name, id, email, callback) {//used in routing register: 
+		//if user has registered then redirect to viewRegister
+		connectionUser.query("select * from ?? where NUSNETSID=? and USERNAME=?", [Userinfo.table, id, name], function(err, resul) {
+			if (err) throw err;
+			if (resul.length == 0) {
+				console.log("user not in DB yet. adding her later.");// followed by addUserToUserInfo
+				callback(name, id, email, false);
+			} else {
+				console.log("user in DB.");
+				callback(name, id, email, true);
+			}
+		})
+	}
+
+	this.getUserGroup = function(name, id, callback) {//if this guy doesnt have a group, directed to register page//related to Group_info
+		connectionUser.query("select * from ?? where USERNAME=? and NUSNETSID=?", [Userinfo.table, name, id], function(err, resul) {
+			if (err) throw err;
+			if(resul.length == 0) {
+				console.log("this guy does not even exist");
+				callback(false, null, false);
+			} else if(resul[0].GROUPNAME == null) {
+				console.log("this guy hasnt gotten a group yet!");
+				callback(id, null, false);
+			} else {
+				console.log("ok this guy is in a group");
+				callback(id, resul[0].GROUPNAME, true);
+			}
+		});
+	}
+
+	UserGetEmailAddFromDB = function(id, callback) {
 		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [Userinfo.table, id], function(err, results) {
 			if (err) throw err;
 			if (results.length == 0) {
@@ -234,8 +305,14 @@ function dbGroupandUser() {
 		})
 	}
 
+	UserGetEmailAddFromReq = function(email, callback) {
+		console.log(email);
+		mailOptions.to = email;
+		callback(mailOptions);
+	} 
+
 	UserSendEmailPart1= function (id, callback) {
-		UserGetEmailAdd(id, function(idd, resul, boo) {
+		UserGetEmailAddFromDB(id, function(idd, resul, boo) {
 			if (boo == false) {
 				console.log("user not found");
 			} else if (boo == true) {
@@ -246,7 +323,7 @@ function dbGroupandUser() {
 		});
 	}
 
-	this.UserSendEmail = function(id, callback) {
+	this.sendUserEmail = function(id, callback) {
 		UserSendEmailPart1(id, function(mO) {
 			console.log("mO: " + JSON.stringify(mO));
 			transporter.sendMail(mO, function(err, info) {
@@ -259,6 +336,21 @@ function dbGroupandUser() {
 				}
 			});
 		});
+	}
+
+	this.sendUserEmailFromReq = function(email, callback) { //used in start a group, to send emails to others members to register or join the group
+		UserGetEmailAddFromReq(email, function(mO) {
+			console.log("mO: " + JSON.stringify(mO));
+			transporter.sendMail(mO, function(err, info) {
+				if (err) {
+					console.log(err);
+					callback(false);
+				} else {
+					console.log("???????????" + info);
+					callback(true);
+				}
+			});
+		});			
 	}
 }
 

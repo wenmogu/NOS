@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+   	<title>Hello, <%= profile.displayName %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+  	// [{"GROUPNAME":"moguempire"},
+	// {"GROUPNAME":"moguempireee"},
+	// {"GROUPNAME":"wenxinnnn"},
+	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
+	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
+	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"}]
+	{profile:req.user, groupName:resul}
+  	<form action="/manageGroup", method="POST">
+    	<fieldset>
+    		<label>Register Group Form </label> <br/>
+        	User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
+        	NUSNETSID: <input type="text" name='usenusnetsid' value='<%=profile.NusNetsID%>' disabled> <br/>
+        	Member 1 Email (Your own): <input type="text" name='member1email' value="<%=profile.emails[0].value%>" disabled> <br/>
+        	Group: <input type='text' name='groupname' required> <br/>
+        	Member 2 Email: <input type="text" name='member2email' required> <br/>
+        	Member 3 Email: <input type="text" name='member3email' required> <br/>
+        	Member 4 Email: <input type="text" name='member4email' required> <br/>
+        	Member 5 Email (optional if your group does not have a fifth member): <input type="text" name='member5email'> <br/>
+
+        	<input type="submit" value="I AGREE TO REGISTER INTO THIS ROOM BOOKING SYSTEM"/>
+     		
+    	</fieldset>
+    </form>
+
+  </body>
+</html>

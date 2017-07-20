@@ -13,25 +13,26 @@
       }
     </script>
   </div>
+{profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp}
+//[{"GROUPNAME":"moguempireee","ROOMNUMBER":"101","SLOTSTART":"10:00:00","SLOTEND":"12:00:00","DECISIONTIME":"2017-07-13T17:11:50.000Z"}]
 
   <div>
 
-    <h1><%= profile.displayName %></h1>
+    <h1><%= groupName %></h1>
     <p>Welcome to viewBooking page, <%= profile.displayName %></p>
-    <% for(var i=0;i < table.length; i++) {%>
-    <p>Room:<%= table[i].RoomNumber %></p>
-    Status: 
-     <% if(table[i].Status != 0) { %>
-        <p id="Status<%= i %>" style="color:red"> You've booked this room</p>
-     <% } else { %>
-        <p id="Status<%= i %>" style="color:green"> Available for booking</p>
-     <% } %>
-    Time: <p><%= table[i].TimeModified %></p>
-    	<br>
+    <% if (groupHasMadeBooking == true) { %>
+      <% for(var i=0;i < table.length; i++) {%>
+        <h4>Room:<%= table[i].ROOMNUMBER %></h4>
+        <h4> Your Timeslot </h4>
+        <p style="color:red">starts at:<%=table[i].SLOTSTART %> </p>
+        <p style="color:green">ends at:<%=table[i].SLOTEND %> </p>
+        <h4> Booking Time: </h4>
+        <p><%= table[i].DECISIONTIME %></p>
+        <br>
+      <% } %>
     <% } %>
-
-    <% if (table.length == 0) { %>
-      <button onclick="location.href='/booking'"> book </button>
+    <% if (groupHasMadeBooking == true) { %>
+      <button onclick="location.href='/booking?groupName=<%= groupName %>'"> book </button>
     <% } %>
 
 

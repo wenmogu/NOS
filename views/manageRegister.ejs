@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>Hello, <%= profile.displayName %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  </head>
+  <body>
+    <div>
+      <button onclick="b()">Logout</button>
+      <script>
+        function b(){
+            window.location.href='/logout';
+        }
+      </script>
+    </div>
+    <div>
+      <button onclick="c()">Start a Group</button>
+      <script>
+        function c(){
+            window.location.href='/startAGroup';
+        }
+      </script>
+    </div>
+    <div>
+      <button onclick="d()">Join a Group</button>
+      <script>
+        function d(){
+            window.location.href='/joinAGroup';
+        }
+      </script>
+    </div>
+  </body>
+</html>

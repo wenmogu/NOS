@@ -9,7 +9,7 @@
         <label>Booking Form </label> <br/>
         User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
         Email: <input type="text" name='useremail' value="<%=profile.emails[0].value%>" disabled> <br/>
-		Room Number <select name="roomnumber">
+		Room Number: <select name="roomnumber">
 
 		  <%for (var i= 0; i < rooms.length; i++) { %>  
             <% if (bookedRoom == undefined) {%>
@@ -22,6 +22,9 @@
                 <% } %>
             <% } %>
 		  <%} %>
+        </select> <br/>
+        Time Slot: <select name='timeslot'> 
+        <option><%=timeslotstart%> - <%=timeslotend%></option>
 		</select> <br/>
 
 <!--         <script type='text/javasript'>

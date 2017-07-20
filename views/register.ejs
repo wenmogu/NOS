@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>Hello, <%= profile.displayName %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  </head>
+  <body>
+    <form action="/viewRegister", method="POST">
+    	<fieldset>
+    		<label>Register Form </label> <br/>
+        	User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
+        	NUSNETSID: <input type="text" name='usenusnetsid' value='<%=profile.NusNetsID%>' disabled> <br/>
+        	Email: <input type="text" name='useremail' value="<%=profile.emails[0].value%>" disabled> <br/>
+        	<input type="submit" value="I AGREE TO REGISTER INTO THIS ROOM BOOKING SYSTEM"/>
+        	
+    	</fieldset>
+    </form>
+    <div>
+  		<button onclick="b()">NOPE I WANT TO QUIT</button>
+	      <script>
+	        function b(){
+	            window.location.href='/logout';
+	        }
+	      </script>
+	</div>
+
+
+  </body>
+</html>

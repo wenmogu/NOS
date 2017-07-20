@@ -1,0 +1,13 @@
+1. get ur register page done --done
+2. get ur Group booking page done
+3. get ur Group cancellation page done
+4. write ur api for daily sql export, sql delete and sql create table
+	use node schedule  --done
+	use node child process/cross spawn
+	use node mailTransporter and rand-token
+5. write ur api for admin side
+6. write ur admin system
+7. write ur group report api
+8. write ur group report page
+
+9. pack everything into docker
