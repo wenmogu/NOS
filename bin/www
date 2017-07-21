@@ -91,7 +91,7 @@ function onListening() {
 }
 
 var tableRenewal = require('../config/tableRenewal');
-var scheduler = tableRenewal();
+var scheduler = new tableRenewal();
 scheduler.createTableSchedule('0 0 * * *', function(boo){
   console.log("table created? "+ boo);
 });

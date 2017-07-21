@@ -9,7 +9,7 @@ var Groupinfo = {
   database : 'nus_db',
   table    : 'Group_info'
 };
-
+ 
 var Userinfo = {
   host     : 'localhost',
   user     : 'root',
@@ -52,42 +52,10 @@ var connectionRV = mysql.createConnection(RVRCuser);
 
 //results of select from table example: [{"Id":2,"RoomNumber":"102","Name":"Wen Xin","Email":"e0052753@u.nus.edu","Status":1,"TimeModified":"2017-06-26T10:43:55.000Z"}]
 function dbGroupandUser() {
-	//used in Group registration (the first person register, or pull other ppl in)
-	this.IfGroupAlrExist = function(name, callback) {
-		connection.query('select * from ?? where GROUPNAME=?', [Groupinfo.table, name], function(err, results) {
-			if(err) {
-				console.log(err);
-				throw err;
-			};
-			if(results.length == 0) { //no such group, can register
-				callback(name, false, results);
-			} else if (results.length == 1) {
-				callback(name, true, results); //there is one group with this name, join them
-			} else {
-				callback(name, null, results); // error
-			}
-		});
-	}
-
-	this.IfGroupComplete = function(name, callback) { //exactly same as IfGroupIsComplete, used externally
-		connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
-			console.log(results);
-			if (err) throw err;
-			if (results.length == 0) {
-				callback(name, null); //group does not even exist
-			} else if (results[0].NUSNETSID1 == "none" ||
-				results[0].NUSNETSID2 == "none" ||
-				results[0].NUSNETSID3 == "none" ||
-				results[0].NUSNETSID4 == "none" ) {
-				callback(name, false); //group is not complete, cannt make a booking 
-			} else {
-				callback(name, true); //group is complete, can make a booking
-			}
-		});
-	}
+	
 
 	IfGroupIsComplete = function(name, callback) { //precondition: the group is alr registered
-		connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
+		connection.query("select * from ?? where GROUPID=?", [Groupinfo.table, name], function(err, results) {
 			console.log(results);
 			if (err) throw err;
 			if (results.length == 0) {
@@ -102,26 +70,6 @@ function dbGroupandUser() {
 			}
 		});
 	}
-
-	// IfIdAlrAddedPart1 = function(id, arr, callback) {//arr is an empty array 
-	// 		for (var i = 1; i <= 5; i++) {
-	// 			connection.query("select * from ?? where NUSNETSID" + i + "=" + "?", [Groupinfo.table, id], function(err, results) {
-	// 				console.log(JSON.stringify(results));
-	// 				if(err) {
-	// 					throw err;
-	// 				} else if (results.length == 0) {
-	// 					;
-	// 				} else {//[{"NUSNETSID1":"e0052753"},{"NUSNETSID1":"a"},{"NUSNETSID1":"e0052753"}]
-	// 					for (var u = 0; u < results.length; u++) {
-	// 						arr.push(results[u]["GROUPNAME"]);
-	// 						console.log("array: " + arr);
-	// 					}
-	// 				}
-	// 			});
-	// 		}
-	// 		setTimeout(function(){callback(id, arr);}, 500);
-	// 		//setTimeout(function(){console.log("*************************** " + arr+ " **************************");}, 1000);
-	// }
 
 	IfIdAlrAddedPart1 = function(id, emptyarr, i, callback) {//id, [], 1, callback
 		if(i > 5) {
@@ -132,7 +80,7 @@ function dbGroupandUser() {
 				if (results.length == 0) {
 					IfIdAlrAddedPart1(id, emptyarr, i + 1, callback);
 				} else {
-					emptyarr.push(results[0]["GROUPNAME"]);
+					emptyarr.push(results[0]["GROUPID"]);
 					IfIdAlrAddedPart1(id, emptyarr, i + 1, callback);
 				}
 			}) 
@@ -149,82 +97,65 @@ function dbGroupandUser() {
 		})
 	}
 
-	//precondition: the group name is valid, so can register
-	// the name, id1, id2, id3, id4 and id5 r submitted to the database, where a grp with name and id1 is created
-	// the rest of the ids send email to ask them confirm their group, then update after confirmation. 
-	this.registerGroup = function(name, id1, id2, id3, id4, id5, callback) {
-		connection.query("insert into ?? (GROUPNAME, NUSNETSID1) values (?, ?)", [Groupinfo.table, name, id1], function(err, results) {
-			if (err) throw err;
-			console.log(results);
-			callback(name, id2, id3, id4, id5);
-		});
-	}
-
-
-	//precondition: the owner of the id acknowledge by clicking the link on the email and confirming on the confirmation page
-	//precondition: the group alr exists
-	//precondition: run this together with addGroupToUserInfo to add the groupname into the userinfo table
-	//postcondition: the id's might be added multiple times to the same grp
-	this.registerID = function(name, id, callback) { //name is group name!!!
-		IfIdAlrAdded(id, function(idd, resul, booo) {
-			if(booo == true) {
-				console.log("this id has alr been registered in groups with group names " + resul);
-				callback(name, id, false);
-			} else if (booo == false) {
-				console.log("this id hasnt been registered in any group yet.");
-				IfGroupIsComplete(name, function(namee, boo) {
-					if (boo == false) {
-						console.log("incomplete group, can register the next id!");
-						connection.query("select * from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
-							console.log(results);
-							for(var i = 2; i <= 5; i++) {
-								console.log(i);
-								var str = "NUSNETSID" + i;
-								console.log("**************************************");
-								console.log(JSON.stringify(results));
-								if(results[0][str] == "none") {
-									connection.query("update ?? set NUSNETSID" + i + "=? where GROUPNAME=?", [Groupinfo.table, id, name], function(err, resultss) {
-										console.log("add member id successfully!");
-										console.log("^^^^^^^^^^^^666" + resultss);
-										callback(name, id, true);
-									});
-									break;
-								} else {
-									continue;
-								}
-							}
-						});
-					} else if (boo == true) {
-						console.log("lets check NUSNETSID5");
-						connection.query("select NUSNETSID5 from ?? where GROUPNAME=?", [Groupinfo.table, name], function(err, results) {
-							if(results[0].NUSNETSID5 == null) {
-								console.log("one more available id slot in this grp!");
-								connection.query("update ?? set NUSNETSID5=? where GROUPNAME=?", [Groupinfo.table, id, name], function(err, results) {
-									console.log("add to id5 slot successfully!");
-									console.log(results);
-									callback(name, id, true);
-								})
-							} else if(results[0].NUSNETSID5 != null) {
-								console.log("Ooops the grp is full! ")
-								callback(name, id, false);
-							}
-						});
-					} else if (boo == null) {
-						console.log("Group not registered!");
-						callback(name, id, null);
-					}
-				});
-			}
-		});
-	}
+	
 
 	this.lol = function(callback) {
 		connection.query("select NUSNETSID1 from ??", [Groupinfo.table], function(err, results) {
 					console.log(results);
 					callback(results);
 		});
+	}	
+
+	isUserInDB = function(name, id, email, callback) {
+		connectionUser.query("select * from ?? where NUSNETSID=? and USERNAME=?", [Userinfo.table, id, name], function(err, resul) {
+			if (err) throw err;
+			if (resul.length == 0) {
+				console.log("user not in DB yet. adding her later.");// followed by addUserToUserInfo
+				callback(name, id, email, false);
+			} else {
+				console.log("user in DB.");
+				callback(name, id, email, true);
+			}
+		})
 	}
+
+	
+	UserGetEmailAddFromDB = function(id, callback) {
+		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [Userinfo.table, id], function(err, results) {
+			if (err) throw err;
+			if (results.length == 0) {
+				console.log("User is not found");
+				callback(id, results, false);
+			} else {
+				console.log("User email obtained");
+				callback(id, results, true);
+			}
+		})
+	}
+
+	UserGetEmailAddFromReq = function(email, callback) {
+		console.log(email);
+		mailOptions.to = email;
+		callback(mailOptions);
+	} 
+
+	UserSendEmailPart1= function (id, callback) {
+		UserGetEmailAddFromDB(id, function(idd, resul, boo) {
+			if (boo == false) {
+				console.log("user not found");
+			} else if (boo == true) {
+				console.log("add user to mailOptions");
+				mailOptions.to = resul[0].EMAIL;
+				callback(mailOptions);
+			}
+		});
+	}
+
+
+
 /* _______________________________________________________User methods __________________________________________________________*/
+
+
 	//precondition: the user tries to login, and NUS authenticates the request and fetched the profile of the user
 	//postcondition: the webpage check if this user if from RVRC: if true, allow access; if false, deny access
 	this.isUserFromRVRC = function(id, name, callback) {
@@ -240,7 +171,8 @@ function dbGroupandUser() {
 		})
 	}
 
-	isUserInDB = function(name, id, email, callback) {
+	this.hasUserRegistered = function(name, id, email, callback) {//used in routing register: 
+		//if user has registered then redirect to viewRegister
 		connectionUser.query("select * from ?? where NUSNETSID=? and USERNAME=?", [Userinfo.table, id, name], function(err, resul) {
 			if (err) throw err;
 			if (resul.length == 0) {
@@ -272,71 +204,128 @@ function dbGroupandUser() {
 		});
 	}
 
-	this.addGroupToUserInfo = function(grpname, id, name, callback) {//related to Group_info
-		connectionUser.query("update ?? set GROUPNAME=? where NUSNETSID=? and USERNAME=?", [Userinfo.table, grpname, id, name], function(err, resul) {
-			if (err) throw err;
-			console.log("groupname of the user updated.");
-			callback(true);
-		})
-	}
-
-	this.hasUserRegistered = function(name, id, email, callback) {//used in routing register: 
-		//if user has registered then redirect to viewRegister
-		connectionUser.query("select * from ?? where NUSNETSID=? and USERNAME=?", [Userinfo.table, id, name], function(err, resul) {
-			if (err) throw err;
-			if (resul.length == 0) {
-				console.log("user not in DB yet. adding her later.");// followed by addUserToUserInfo
-				callback(name, id, email, false);
-			} else {
-				console.log("user in DB.");
-				callback(name, id, email, true);
-			}
-		})
-	}
-
 	this.getUserGroup = function(name, id, callback) {//if this guy doesnt have a group, directed to register page//related to Group_info
 		connectionUser.query("select * from ?? where USERNAME=? and NUSNETSID=?", [Userinfo.table, name, id], function(err, resul) {
 			if (err) throw err;
 			if(resul.length == 0) {
 				console.log("this guy does not even exist");
 				callback(false, null, false);
-			} else if(resul[0].GROUPNAME == null) {
+			} else if(resul[0].GROUPID == null) {
 				console.log("this guy hasnt gotten a group yet!");
 				callback(id, null, false);
 			} else {
 				console.log("ok this guy is in a group");
-				callback(id, resul[0].GROUPNAME, true);
+				callback(id, resul[0].GROUPID, true);
+			}
+		});
+	}
+/* _______________________________________________________GROUP methods __________________________________________________________*/
+
+
+	//used in Group registration (the first person register, or pull other ppl in)
+	this.IfGroupAlrExist = function(name, callback) {
+		connection.query('select * from ?? where GROUPID=?', [Groupinfo.table, name], function(err, results) {
+			if(err) {
+				console.log(err);
+				throw err;
+			};
+			if(results.length == 0) { //no such group, can register
+				callback(name, false, results);
+			} else if (results.length == 1) {
+				callback(name, true, results); //there is one group with this name, join them
+			} else {
+				callback(name, null, results); // error
 			}
 		});
 	}
 
-	UserGetEmailAddFromDB = function(id, callback) {
-		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [Userinfo.table, id], function(err, results) {
+	this.IfGroupComplete = function(name, callback) { //exactly same as IfGroupIsComplete, used externally
+		connection.query("select * from ?? where GROUPID=?", [Groupinfo.table, name], function(err, results) {
+			console.log(results);
 			if (err) throw err;
 			if (results.length == 0) {
-				console.log("User is not found");
-				callback(id, results, false);
+				callback(name, null); //group does not even exist
+			} else if (results[0].NUSNETSID1 == "none" ||
+				results[0].NUSNETSID2 == "none" ||
+				results[0].NUSNETSID3 == "none" ||
+				results[0].NUSNETSID4 == "none" ) {
+				callback(name, false); //group is not complete, cannt make a booking 
 			} else {
-				console.log("User email obtained");
-				callback(id, results, true);
+				callback(name, true); //group is complete, can make a booking
 			}
-		})
+		});
 	}
 
-	UserGetEmailAddFromReq = function(email, callback) {
-		console.log(email);
-		mailOptions.to = email;
-		callback(mailOptions);
-	} 
+	//precondition: the group name is valid, so can register
+	// the name, id1, id2, id3, id4 and id5 r submitted to the database, where a grp with name and id1 is created
+	// the rest of the ids send email to ask them confirm their group, then update after confirmation. 
+	this.registerGroup = function(name, id1, id2, id3, id4, id5, callback) {
+		connection.query("insert into ?? (GROUPID, NUSNETSID1) values (?, ?)", [Groupinfo.table, name, id1], function(err, results) {
+			if (err) throw err;
+			console.log(results);
+			callback(name, id2, id3, id4, id5);
+		});
+	}
 
-	UserSendEmailPart1= function (id, callback) {
-		UserGetEmailAddFromDB(id, function(idd, resul, boo) {
-			if (boo == false) {
-				console.log("user not found");
-			} else if (boo == true) {
-				console.log("add user to mailOptions");
-				mailOptions.to = resul[0].EMAIL;
-				callback(mailOptions);
+	this.addGroupToUserInfo = function(grpname, id, name, callback) {//related to Group_info
+		connectionUser.query("update ?? set GROUPID=? where NUSNETSID=? and USERNAME=?", [Userinfo.table, grpname, id, name], function(err, resul) {
+			if (err) throw err;
+			console.log("groupname of the user updated.");
+			callback(true);
+		})
+	}
+	//precondition: the owner of the id acknowledge by clicking the link on the email and confirming on the confirmation page
+	//precondition: the group alr exists
+	//precondition: run this together with addGroupToUserInfo to add the groupname into the userinfo table
+	this.registerID = function(name, id, callback) { //name is group name!!!
+		IfIdAlrAdded(id, function(idd, resul, booo) {
+			if(booo == true) {
+				console.log("this id has alr been registered in groups with group names " + resul);
+				callback(name, id, false);
+			} else if (booo == false) {
+				console.log("this id hasnt been registered in any group yet.");
+				IfGroupIsComplete(name, function(namee, boo) {
+					if (boo == false) {
+						console.log("incomplete group, can register the next id!");
+						connection.query("select * from ?? where GROUPID=?", [Groupinfo.table, name], function(err, results) {
+							console.log(results);
+							for(var i = 2; i <= 5; i++) {
+								console.log(i);
+								var str = "NUSNETSID" + i;
+								console.log("**************************************");
+								console.log(JSON.stringify(results));
+								if(results[0][str] == "none") {
+									connection.query("update ?? set NUSNETSID" + i + "=? where GROUPID=?", [Groupinfo.table, id, name], function(err, resultss) {
+										console.log("add member id successfully!");
+										console.log("^^^^^^^^^^^^666" + resultss);
+										callback(name, id, true);
+									});
+									break;
+								} else {
+									continue;
+								}
+							}
+						});
+					} else if (boo == true) {
+						console.log("lets check NUSNETSID5");
+						connection.query("select NUSNETSID5 from ?? where GROUPID=?", [Groupinfo.table, name], function(err, results) {
+							if(results[0].NUSNETSID5 == null) {
+								console.log("one more available id slot in this grp!");
+								connection.query("update ?? set NUSNETSID5=? where GROUPID=?", [Groupinfo.table, id, name], function(err, results) {
+									console.log("add to id5 slot successfully!");
+									console.log(results);
+									callback(name, id, true);
+								})
+							} else if(results[0].NUSNETSID5 != null) {
+								console.log("Ooops the grp is full! ")
+								callback(name, id, false);
+							}
+						});
+					} else if (boo == null) {
+						console.log("Group not registered!");
+						callback(name, id, null);
+					}
+				});
 			}
 		});
 	}

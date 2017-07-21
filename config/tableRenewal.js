@@ -7,13 +7,15 @@ var connection = mysql.createConnection({
 });
 
 var schedule = require('node-schedule');
-
+ 
 function wrapper() {
 	this.createTableSchedule = function(timestr, callback) {//everday at 00:00
 		schedule.scheduleJob(timestr, function() {
-			dateStringForCreateTable(function(str) {
-				createTable(str);
-				callback(true);
+			dateStringForDATE(function(datestr) {
+				dateStringForCreateTable(function(str) {
+					createTable(str, datestr);
+					callback(true);
+				})
 			})
 		})
 	}
@@ -36,6 +38,34 @@ function wrapper() {
 		callback(str);
 	}
 
+	dateStringForDATE = function(callback) {
+		var date = new Date();
+		var time = date.getTime();
+		date.setTime(time + 345600000);
+		var arr = d.toLocaleDateString().split('/');
+		var ar = [];
+		ar[0] = arr[2];
+		ar[1] = arr[0];
+		ar[2] = arr[1];
+		var result = ar.toString().replace(/,/g, "-");
+		console.log("result: " + result);
+		callback(result);
+	}
+
+	this.dateStringForSomeDATE = function(int, callback) {
+		var date = new Date();
+		var time = date.getTime();
+		date.setTime(time + 86400000 * int);
+		var arr = date.toLocaleDateString().split('/');
+		var ar = [];
+		ar[0] = arr[2];
+		ar[1] = arr[0];
+		ar[2] = arr[1];
+		var result = ar.toString().replace(/,/g, "-");
+		console.log("result: " + result);
+		callback(result);
+	}
+
 	this.dateStringForSomeDay = function(int, callback) {//for testing purpose
 		var date = new Date();
 		var time = date.getTime();
@@ -55,7 +85,7 @@ function wrapper() {
 			'16TO18 varchar(225) not null default "NONE",'+
 			'18TO20 varchar(225) not null default "NONE",'+
 			'20TO22 varchar(225) not null default "NONE",'+
-			'DATEOFTABLE datetime not null default NOW(),'+
+			'DATEOFTABLE date not null,'+
 			'primary key (ROOMNUMBER)'+
 			')');
 	}
@@ -67,30 +97,31 @@ function wrapper() {
 		});
 	}
 
-	createTableContent = function(datestr, i, end, callback) {//i = 6, end = 0;
+	createTableContent = function(datestr, i, end, DATEstr, callback) {//i = 6, end = 0;
 		if (i >= 0) {
-			connection.query('insert into ?? (ROOMNUMBER) values (?)', ['Room_record'+datestr, '10'+i], function(er, res) {
+			connection.query('insert into ?? (ROOMNUMBER, DATEOFTABLE) values (?, ?)', ['Room_record'+datestr, '10'+i, DATEstr], function(er, res) {
 					if (er) throw er;
-					createTableContent(datestr, i - 1, 0, callback);
+					createTableContent(datestr, i - 1, 0, DATEstr, callback);
 			})
 		} else {
 			callback(datestr);
 		}
 		
-	}
+	} 
 
-	updateTableContent = function(str) {
-		connection.query('update ?? set DATEOFTABLE = DATE_ADD(DATEOFTABLE, interval 4 day)', ['Room_record'+str], function(e, r) {
-					if (e) throw e;
-					console.log(r);
-		});
-	}
+	// updateTableContent = function(str) {
+	// 	connection.query('update ?? set DATEOFTABLE = DATE_ADD(DATEOFTABLE, interval 4 day)', ['Room_record'+str], function(e, r) {
+	// 				if (e) throw e;
+	// 				console.log(r);
+	// 	});
+	// }
 
-	this.createTable = function(datestr) {
+	this.createTable = function(datestr, DATEstr) {
 			createTableStatement(datestr, function(tableStatement) {
 				createTableQuery(tableStatement, datestr, function(datee) {
-					createTableContent(datee, 6, 0, function(datestrr) {
-						updateTableContent(datestrr);
+					createTableContent(datee, 6, 0, DATEstr, function(datestrr) {
+						// updateTableContent(datestrr);
+						;
 					});
 				});
 			});
@@ -113,7 +144,7 @@ function wrapper() {
 		callback(str);
 	}
 
-	dropTable = function(str) {
+	this.dropTable = function(str) {
 			connection.query('drop table ??', ['Room_record'+str], function(er, res) {
 				if (er) throw er;
 				console.log(res);

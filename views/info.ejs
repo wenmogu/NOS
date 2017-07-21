@@ -35,7 +35,19 @@
     <% } %>
     </div>
     <br/> <br/>
-{profile:req.user, table:result, userBooking:true, userGroup:grpname, bookedTimeslot:resultt}
+<!-- {profile:req.user, table:result, userBooking:true, userGroup:grpname, bookedTimeslot:resultt}
+<br/>
+{profile:req.user, 
+                      allTimeslots: arrAll, 
+                      userBooking:arrOfBoo, 
+                      userGroup:grpname, 
+                      bookedTimeslot:arrBooked}
+<br/> -->
+
+<% for (var d = 0; d<allTimeslots.length; d++) { %>
+  
+
+DATE: <%= allTimeslots[d][0]["DATEOFTABLE"] %>
  <table>
   <tr>
     <th>Room Number</th>
@@ -47,26 +59,27 @@
     <th>18-20</th>
     <th>20-22</th>
   </tr>
-  <% for (var u=0; u<table.length; u++) { %>
+  <% for (var u=0; u < allTimeslots[d].length; u++) { %>
     <tr>
-      <td> <%= table[u].ROOMNUMBER %></td>
-      <% if(userBooking == true) { %>
+      <td> <%= allTimeslots[d][u].ROOMNUMBER %></td>
+      <% if(userBooking[0] == true) { %>
         <% for(var i=0;i<7; i++) { %>
-          <% if(bookedTimeslot.includes(table[u].ROOMNUMBER.concat("~", i*2+8, ":00:00"))) { %>
-            <td><button onclick="location.href='/booking?room=<%= table[i].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>'" hidden disabled> BOOK
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] == "none") { %>
+            <td>
+            <button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled> BOOK
             </button></td>
           <% } else { %>
-            <td><button onclick="location.href='/booking?room=<%= table[i].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>'" disabled> BOOK
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" disabled> BOOK
             </button></td>
           <% } %>
         <% } %>
       <% } else { %>
         <% for(var i=0;i<7; i++) { %>
-          <% if(bookedTimeslot.includes(table[u].ROOMNUMBER.concat("~", i*2+8, ":00:00"))) { %>
-            <td><button onclick="location.href='/booking?room=<%= table[i].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>'" hidden> BOOK
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] == "none") { %>s
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden> BOOK
             </button></td>
           <% } else { %>
-            <td><button onclick="location.href='/booking?room=<%= table[i].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>'"> BOOK
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'"> BOOK
             </button></td>
           <% } %>
         <% } %>
@@ -76,8 +89,8 @@
   <% } %>
   
 </table>
-
-
+<br/><br/>
+<% } %>
 
 
 

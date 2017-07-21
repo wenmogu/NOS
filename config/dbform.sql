@@ -44,26 +44,29 @@ A list of all_user_info
 create table User_info (
 	USERNAME varchar(225) not null,
 	NUSNETSID varchar(225) not null,
-	GROUPNAME varchar(225),
+	GROUPID int,
 	EMAIL varchar(225) not null,
 	primary key(NUSNETSID)
 );
 
 A list recording all the decisions in a day
 create table Group_record (
-	GROUPNAME varchar(225) not null,
-	DECISION varchar(225) not null, 
+	GROUPID int not null, 
+	BOOK_DECISION varchar(225) not null, 
 	DATE date not null,
 	ROOMNUMBER varchar(225) not null,
 	SLOTSTART time not null,
 	SLOTEND time not null,
-	DECISIONTIME datetime not null default NOW()
+	BOOK_DECISIONTIME datetime not null default NOW(),
+	CANCEL_DECISION varchar(225),
+	CANCEL_DECISIONTIME datetime,
+	REMARK varchar(225)
 );
 insert into Group_record (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", '2017-3-23', '101', '100000', '120000');
 
 A list of all the booking decisions.
 create table Book_state (
-	GROUPNAME varchar(225) not null,
+	GROUPID int not null,
 	ROOMNUMBER varchar(225) not null,
 	DATE date not null,
 	SLOTSTART time not null,
@@ -78,20 +81,6 @@ create table RVRC_User (
 	NAME varchar(225) not null,
 	primary key(NUSNETSID)
 )
-
-
-create table Room_record1 ( 
-			ROOMNUMBER varchar(225) not null,
-			8TO10 varchar(225) not null default "NONE",
-			10TO12 varchar(225) not null default "NONE",
-			12TO14 varchar(225) not null default "NONE",
-			14TO16 varchar(225) not null default "NONE",
-			16TO18 varchar(225) not null default "NONE",
-			18TO20 varchar(225) not null default "NONE",
-			20TO22 varchar(225) not null default "NONE",
-			CREATETIME datetime not null default NOW(),
-			primary key(ROOMNUMBER)
-			);
 
 -- decision: either "cancel" or "book"
 create table Room_record_Fri_Jul_21_2017 (

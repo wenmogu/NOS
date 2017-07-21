@@ -5,13 +5,28 @@ var Groupdb = require('./db_user');
 var gb = require('./db_groupBooking');
 var user = new Groupdb();
 var groupBooking = new gb();
-
-// user.IfGroupAlrExist("1338", function(name, boo, result) {
+ 
+// user.IfGroupAlrExist("1701", function(name, boo, result) {
 //   console.log(boo);
 //   console.log(result);
 // })
 
-// user.IfGroupComplete('1338', function(name, boo) {
+
+// groupBooking.allBookedTimeslotsFor5Days(function(arr) {
+//   console.log(JSON.stringify(arr));
+// }) //first layer: data for 5 days; 
+//second layer: in each data for each day array, there's two elements: first one is date string.
+      //second one is an array of all booked timeslot of the day
+// third layer: in the array of all booked timeslot of the day, there are element arrays inside, 
+//fourth layer: each element array of the third layer has elements in term of: timeslot string, roomnumber object, roomnumber object...
+// [["21 7 2017",[]],
+// ["22 7 2017",[["10TO12",{"ROOMNUMBER":"104"}]]],
+// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
+// ["24 7 2017",[]],
+// ["25 7 2017",[]]]
+
+
+// user.IfGroupComplete('1701', function(name, boo) {
 //   console.log(boo);
 //   console.log(name);
 // })
@@ -22,28 +37,38 @@ var groupBooking = new gb();
 //   console.log(boo);
 // })
 
-// user.registerID('moguempire', 'e0052753', function(name, id, boo) {
+// user.registerID('1701', 'e0052755', function(name, id, boo) {
 //   console.log(name);
 //   console.log(id);
 //   console.log(boo);
 // })
-groupBooking.allEmptyTimeslotsFor5Days(function(arr) {
-  console.log(JSON.stringify(arr));
-})
-// groupBooking.groupBook('woohoo', '23 07 2017', '104', '10TO12', function(boo) {
+
+// groupBooking.bookedTimeslotForTheDay("23 07 2017", function(arr) {
+//   console.log(JSON.stringify(arr));
+// })
+
+// groupBooking.allEmptyTimeslotsFor5Days(function(arr) {
+//   console.log(JSON.stringify(arr));
+// })
+
+// groupBooking.groupCancel('woohoo', '22 07 2017', '104', '10TO12', function(boo) {
 //   console.log(boo);
 // })
 
 
-// groupBooking.bookedTimeslot("23 07 2017", function(lol) {
+// groupBooking.bookedTimeslotForTheDay("23 07 2017", function(lol) {
 //   console.log(lol);
 //   console.log("-------------------------------");
-//   console.log(JSON.stringify(lol));
+//   console.log(JSON.stringify(lol)); //[] //the third layer of the function below
 //   console.log("-------------------------------");
 // });
 
-// groupBooking.allTimeslotsFor5Days(function(ar) {
+// groupBooking.allBookedTimeslotsFor5Days(function(ar) {
 //   console.log(JSON.stringify(ar));
+// })
+
+// groupBooking.hasGroupBookedAnyFor5Days('moguempire', function(ar) {
+//   console.log(ar);
 // })
 
 // groupBooking.emptyTimeslot("23 07 2017", function(lol) {
@@ -52,6 +77,13 @@ groupBooking.allEmptyTimeslotsFor5Days(function(arr) {
 //     console.log(JSON.stringify(lol));
 //     console.log("-------------------------------");
 // })
+// [["8TO10",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["10TO12",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["12TO14",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["14TO16",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["16TO18",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["18TO20",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}],
+// ["20TO22",{"ROOMNUMBER":"100"},{"ROOMNUMBER":"101"},{"ROOMNUMBER":"102"},{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"},{"ROOMNUMBER":"105"},{"ROOMNUMBER":"106"}]]
 
 // groupBooking.groupBookingState("moguempire", function(arr) {
 //   console.log(JSON.stringify(arr));
@@ -106,7 +138,7 @@ groupBooking.allTimeslotsFor5Days(function(ar) {
 
 */
 
-// groupBooking.TimeslotForTheDay("20 7 2017", function(resul) {
+// groupBooking.TimeslotForTheDay("21 7 2017", function(resul) {
 //   console.log(resul);
 // })
 // groupBooking.processDateWithUnderscore("12 7 2017", function(str) {
@@ -116,181 +148,26 @@ groupBooking.allTimeslotsFor5Days(function(ar) {
 //   console.log(arr);
 // });
 
-// wenxiaoxin.groupCancel("moguempire", "22 6 2017", "103", "18TO20", function(bo) {
-//   console.log(bo);
-// });
 
 
 // gb.isTimeslotEmpty("101", "8TO10", function(boo) {
 //   console.log(boo);
 // });
 
-// wenxiaoxin.hasGroupBooked("wenxinnnn", function(boo) {
-//   console.log(boo);
-// });
 
-// wenxiaoxin.groupBook("wenxinnnnnnnnnnnnn", "101", "18TO20", function(bo) {
-//   console.log(bo);
-// })
 
-// moguzu.isUserFromRVRC("e0052753", "wenxin", function(id, name, boo) {
-//   console.log(boo);
-// })
-
-// moguzu.getUserGroup("Wen Xin", "e0052723", function(id, name, boo) {
+// user.getUserGroup("Wen Xin", "e0052753", function(id, name, boo) {
 //   console.log(name);
 //   console.log(boo);
 // })
 var ct = require('./tableRenewal');
 var tableRenewal = new ct();
+tableRenewal.dateStringForSomeDay(0, function(str) {
+  tableRenewal.dateStringForSomeDATE(0, function(strr) {
+    tableRenewal.createTable(str, strr);
+  })
+})
 
-// tableRenewal.dateStringForSomeDay(0, function(str) {
-//   tableRenewal.createTable(str);
-// });
-
-// tableRenewal.dateStringForSomeDay(7, function(str) {
-//   tableRenewal.createTable(str);
-// });
-
-// tableRenewal.dateStringForSomeDay(8, function(str) {
-//   tableRenewal.createTable(str);
-// });
-// setTimeout(function() {tableRenewal.dateStringForSomeDay(7, function(str) {
-//   tableRenewal.createTable(str);
-// });}, 1000);
-
-
-
-// tableRenewal.dateStringForCreateTable(function(str) {
-//   console.log(str);
-//   tableRenewal.createTable(str);
-// }); //_Sat_Jul_22_2017
-
-// tableRenewal.dateStringForDropTable(function(str) {
-//   tableRenewal.dropTable(str);
-// })
-// tableRenewal.processDateWithUnderscore("11 0 2017", function(str) {
-//   console.log(str);
-// })
-
-
-// tableRenewal.createTable();
-// setTimeout(function() {tableRenewal.getTableDate('Room_record2', function(){;});}, 800);
-
-// wenxiaoxin.allTimeslot(function(resul) {
-//   console.log(JSON.stringify(resul));
-//   console.log(resul[1].ROOMNUMBER);
-// })
-// wenxiaoxin.groupBookingState("moguempireee", function(resul, boo) {
-//   console.log(JSON.stringify(resul));
-//   console.log(boo);
-// })
-// wenxiaoxin.emptyTimeslotOfRoomPart1("101", [], function(arr){console.log(arr);});
-// [{"ROOMNUMBER":"100","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"},
-// {"ROOMNUMBER":"101","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"wenxinnnn","16TO18":"NONE","18TO20":"wenxinnnnnnnnnnnnn","20TO22":"NONE"},
-// {"ROOMNUMBER":"102","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"},
-// {"ROOMNUMBER":"103","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"},
-// {"ROOMNUMBER":"104","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"},
-// {"ROOMNUMBER":"105","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"},
-// {"ROOMNUMBER":"106","8TO10":"NONE","10TO12":"NONE","12TO14":"NONE","14TO16":"NONE","16TO18":"NONE","18TO20":"NONE","20TO22":"NONE"}]
-//Wenmogu.totalTable();
-//Wenmogu.totalNumber();
-//var a = Wenmogu.isEmpty("101",function (result) {
-//	console.log(result);
-//});
-// Wenmogu.viewInfoByName("wen", function(results) {
-// 	console.log(results);
-// });
-
- // Wenmogu.isEmpty("110",function (result) {
- // 	console.log(result);
- // });
-
-// Wenmogu.nvrBookedBefore("Wen Xin");
-//Wenmogu.book("WX", null, "110", function(result) {
-//	console.log("test_db callback: " + result);
-
-// Wenmogu.isEmpty("101",function (result) {
-// 	//console.log();
-// 	console.log(result);
-// });
-// Wenmogu.book("Wen", "e23423143214@gmail.com", "105", function(result) {
-// 	console.log("%%%%%%" + result);
-
-// });
-
-//moguzu.registerGroup("moguempireeee", "a", "s", "d", "f", "g", function(a, d, f, g) {console.log("i m here!");});
-// moguzu.lol(function(sd) { console.log(JSON.stringify(sd));});
-// moguzu.registerID("moguempireeeeeeeeeeeeee", "e0052755", function(name, id, boo) {
-// 	if(boo == false) {
-// 		console.log(name + " (" + id + ") " + "cannot be added!");
-// 	} else if (boo == true){
-// 		console.log(name + " (" + id + ") " + "is added!");		
-// 	} else if (boo == null) {
-// 		;
-// 	}
-// // });
-// for (var i = 0; i < 17; i++) {
-// var schedule = require('node-schedule');
-
-// schedule.scheduleJob("0 * * * * *", function() {
-//   moguzu.sendUserEmail('e0032334', function(boo) {
-//     console.log(boo);
-//   })
-// });
-
-
-// wenxiaoxin.allGroup(function(resul) {
-//   console.log(JSON.stringify(resul));
-// })
-// // moguzu.UserRegistered("e0052753", function(id, results, boo){console.log(boo);});
-// for(var i = 0; i < 9; i++) {
-//   setTimeout(function() {
-//   moguzu.UserSendEmail("e0032334", function(b) {
-//   	if(b == true) {
-//   		console.log("woohoo");
-//   	} else {
-//   		console.log(":(((((((((((");
-//   	}
-//   })
-// }, 10000);
-// }
-// console.log(Wenmogu.isEmpty("110"));
-// Wenmogu.emptyRoomNumber(function(result) {
-// 	console.log("$$$$$$$$$$$$$$$$$$$" + JSON.stringify(result));
-// })
-//Wenmogu.totalNumber();
-
-/* error message:
-D:\NOS>node config/test_db
-User registered!
-undefined
-User email obtained
-add user to mailOptions
-{ Error: Invalid login: 534-5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbv0
-534-5.7.14 63j11G9o_Ww0DLVfm0JHiNhZcAexHPVXOYTNYDfyM2LF8t-VuQtVYxyGmoeJId047MusPu
-534-5.7.14 7YG7J1ZJABDthItyWM7xeqjKs0tqvScCJllLU27jV_fTs6nb7Xie4OLInFGtodWDLZqdY_
-534-5.7.14 hO4XmnVdeyOhxenYVxdiQAC7bsmqT7bmx-GgUs5MJSSsNOeAfXdGFpFQM4_HFMDajo9hYJ
-534-5.7.14 GUKBv_-H2sGFxMsLvz5nVHbKUHDCw> Please log in via your web browser and
-534-5.7.14 then try again.
-534-5.7.14  Learn more at
-534 5.7.14  https://support.google.com/mail/answer/78754 v205sm8925170pgb.51 - gsmtp
-    at SMTPConnection._formatError (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:557:19)
-    at SMTPConnection._actionAUTHComplete (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:1253:34)
-    at SMTPConnection._responseActions.push.str (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:340:26)
-    at SMTPConnection._processResponse (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:706:20)
-    at SMTPConnection._onData (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:509:14)
-    at TLSSocket._socket.on.chunk (D:\NOS\node_modules\nodemailer\lib\smtp-connection\index.js:461:47)
-    at emitOne (events.js:96:13)
-    at TLSSocket.emit (events.js:188:7)
-    at readableAddChunk (_stream_readable.js:176:18)
-    at TLSSocket.Readable.push (_stream_readable.js:134:10)
-  code: 'EAUTH',
-  response: '534-5.7.14 <https://accounts.google.com/signin/continue?sarp=1&scc=1&plt=AKgnsbv0\n534-5.7.14 63j11G9o_Ww0DLVfm0JHiNhZcAexHPVXOYTNYDfyM2LF8t-VuQtVYxyGmoeJId047MusPu\n534-5.7.14 7YG7J1ZJABDthItyWM7xeqjKs0tqvScCJllLU27jV_fTs6nb7Xie4OLInFGtodWDLZqdY_\n534-5.7.14 hO4XmnVdeyOhxenYVxdiQAC7bsmqT7bmx-GgUs5MJSSsNOeAfXdGFpFQM4_HFMDajo9hYJ\n534-5.7.14 GUKBv_-H2sGFxMsLvz5nVHbKUHDCw> Please log in via your web browser and\n534-5.7.14 then try again.\n534-5.7.14  Learn more at\n534 5.7.14  https://support.google.com/mail/answer/78754 v205sm8925170pgb.51 - gsmtp',
-  responseCode: 534,
-  command: 'AUTH PLAIN' }
-:(((((((((((
- */
 
 
 // const nodemailer = require ('nodemailer');

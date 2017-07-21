@@ -7,7 +7,7 @@ var info = {
   table    : 'Room_record'
 
 };
-
+ 
 var infoGroup = {
   host     : 'localhost',
   user     : 'root',
@@ -43,8 +43,10 @@ var connectionGroupInfo = mysql.createConnection(infoGroupInfo);
 
 
 function db(){
+/*----Supporting functions-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 	this.allGroup = function(callback) {
-		connectionGroup.query("select ?? from ??", ['GROUPNAME', infoGroupInfo.table], function(err, resul) {
+		connectionGroup.query("select ?? from ??", ['GROUPID', infoGroupInfo.table], function(err, resul) {
 			callback(resul);
 		});
 	}
@@ -72,36 +74,35 @@ function db(){
 
 	hasGroupBookedRoom = function(name, date, room, callback) {//"moguempire", "101", "dd mm year"
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("select * from ?? where GROUPNAME=? AND ROOMNUMBER=? AND DATE=? order by DECISIONTIME desc", [infoGroup.table, name, room, str], function(err, results) {
+			connectionGroup.query("select * from ?? where GROUPID=? AND ROOMNUMBER=? AND DATE=?", [infoGroup.table, name, room, str], function(err, results) {
 				console.log(JSON.stringify(results));
 				if (err) throw err;
 				if(results.length == 0){
-					console.log("this group hasnt made any bookings for this room~");
+					console.log("this group did not book this room");
 					callback(false);
-				} else if (results[0]["DECISION"] == "BOOK") {
-					console.log("this group has alr booked a room ooops");
+				} else if (results[0]["CANCEL_DECISION"] == null) {
+					console.log("this group has booked the room " + room + " on " + date);
 					callback(true);
-				} else if (results[0]["DECISION"] == "CANCEL") {
-					console.log("this group has cancelled their previous booking. Can make another booking.");
+				} else if (results[0]["CANCEL_DECISION"] == "CANCEL") {
+					console.log("this group has cancelled their previous booking on " + date + " . Can make another booking.");
 					callback(false);
 				} 
 			});	
 		});
 	}
-	//17号半夜 我只能写到这里了。。下面都是没改的。。
 
 	hasGroupBooked = function(name, date, callback) {//"moguempire", "101", "dd mm year"
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("select * from ?? where GROUPNAME=? AND DATE=? order by DECISIONTIME desc", [infoGroup.table, name, str], function(err, results) {
+			connectionGroup.query("select * from ?? where GROUPID=? AND DATE=?", [infoGroup.table, name, str], function(err, results) {
 				console.log(JSON.stringify(results));
 				if (err) throw err;
 				if(results.length == 0){
-					console.log("this group hasnt made any bookings for this room~");
+					console.log("this group hasnt made any bookings on " + date);
 					callback(false);
-				} else if (results[0]["DECISION"] == "BOOK") {
-					console.log("this group has alr booked a room ooops");
+				} else if (results[0]["CANCEL_DECISION"] == null) {
+					console.log("this group has alr booked on " + date);
 					callback(true);
-				} else if (results[0]["DECISION"] == "CANCEL") {
+				} else if (results[0]["CANCEL_DECISION"] == "CANCEL") {
 					console.log("this group has cancelled their previous booking. Can make another booking.");
 					callback(false);
 				} 
@@ -110,14 +111,14 @@ function db(){
 	}
 
 	groupBookPart1 = function(name, date, room, timeslot, callback) { 
-//insert into Group_record (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", "101", '2017-3-23', 100000', '120000');
+//insert into Group_record (GROUPID, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", "101", '2017-3-23', 100000', '120000');
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("insert into ?? (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values (?, 'BOOK', ?, ?, ?, ?)", 
+			connectionGroup.query("insert into ?? (GROUPID, BOOK_DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values (?, 'BOOK', ?, ?, ?, ?)", 
 								  [infoGroup.table, name, str, room, timeslot.split("TO")[0]+"0000", timeslot.split("TO")[1]+"0000"],
 								  function(err, resul) {
 								  	if (err) throw err;
 								  	console.log("%%%%%% " + JSON.stringify(resul));
-								  	connectionBook.query("insert into ?? (GROUPNAME, ROOMNUMBER, DATE, SLOTSTART, SLOTEND) values (?, ?, ?, ?, ?)", 
+								  	connectionBook.query("insert into ?? (GROUPID, ROOMNUMBER, DATE, SLOTSTART, SLOTEND) values (?, ?, ?, ?, ?)", 
 									  [infoBook.table, name, room, str, timeslot.split("TO")[0]+"0000", timeslot.split("TO")[1]+"0000"],
 									  function(err, result){
 									  	if (err) throw err;
@@ -155,12 +156,12 @@ function db(){
 	groupCancelPart1 = function(name, date, room, timeslot, callback) { 
 //insert into Group_record (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", "101", '2017-3-23', 100000', '120000');
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("insert into ?? (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values (?, 'CANCEL', ?, ?, ?, ?)", 
+			connectionGroup.query("insert into ?? (GROUPID,, DATE, ROOMNUMBER, SLOTSTART, SLOTEND, CANCEL_DECISION, CANCEL_DECISIONTIME) values (?, ?, ?, ?, ?, 'CANCEL', NOW())", 
 								  [infoGroup.table, name, str, room, timeslot.split("TO")[0]+"0000", timeslot.split("TO")[1]+"0000"],
 								  function(err, resul) {
 								  	if (err) throw err;
 								  	console.log("%%%%%% " + JSON.stringify(resul));
-									connectionBook.query("delete from ?? where GROUPNAME=? AND DATE=?", 
+									connectionBook.query("delete from ?? where GROUPID=? AND DATE=?", 
 										[infoBook.table, name, str], 
 									  function(err, result){
 									  	if (err) throw err;
@@ -202,69 +203,7 @@ function db(){
 			});
 		});
 	}
-
-	//precondition: room and timeslot all exist
-	//              the group is complete
-	//process: check if the prefered timeslot is taken
-	//         check if the group alr booked any room
-	//postcondition: if success
-	this.groupBook = function(name, date, room, timeslot, callback) { //"group name", "101", "8TO10", callback
-		isTimeslotEmpty(date, timeslot, room, function(boo) {
-			if(boo == true) {
-				console.log("alright the roooms empty and u can proceed");
-				hasGroupBooked(name, date, function(booo) {
-					if (booo == false) {
-						console.log("empty group! can proceed!");
-						groupBookPart1(name, date, room, timeslot, function(bool) {
-							if(bool == true) {
-								console.log("updated Group_record! now prepare to update Room_record!");
-								groupBookPart2(name, date, room, timeslot, function(bol) {
-									console.log("Room_record updated. congratz.");
-									callback(true);
-								})
-							}
-						});
-					} else {
-						console.log("group made booking!");
-						callback(false);
-					}
-				});
-			} else {
-				console.log("nahhh");
-				callback(false);
-			}
-		});
-	}
-
-	this.groupCancel = function(name, date, room, timeslot, callback) {
-		isTimeslotEmpty(date, timeslot, room, function(boo) {
-			if(boo == false) {
-				console.log("yes the room is occupied, is this room occupied by this group?");
-				hasGroupBookedRoom(name, date, room, function(booo) {
-					if(booo == false) {
-						console.log("yo this group didnt book this room");
-						callback(false);
-					} else {
-						console.log("yes this room is booked by this group");
-						groupCancelPart1(name, date, room, timeslot, function(bol) {
-							if(bol == true) {
-								console.log("canceled the record in Group_record. Now proceed onto Room_record.");
-								groupCancelPart2(name, date, room, timeslot, function(bool) {
-									if(bool == true) {
-										console.log("canceled the record in Room_record.");
-										callback(true);
-									} 
-								});
-							}
-						});
-					}
-				});
-			} else {
-				console.log("nah the room is not occupied.");
-				callback(false);
-			}
-		})
-	}
+	
 /*----------------------------------------------------------------------------------------------------------------------------*/
 	dateFormat = function(str, callback) {//str: Tue Jul 10 2017; output: dd mm year
 		var d = new Date();
@@ -353,32 +292,11 @@ function db(){
 		}
 	}
 
-	this.allTimeslotsFor5Days = function(callback) {
-		allTimeslotsFor5DaysIter([], [], 5, function(arr) {
-			callback(arr);
-		})
-	}
+	
 
 
 
-	this.hasGroupBookedAny = function(name, date, callback) {//used externally, same as hasGroupBooked
-		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("select * from ?? where GROUPNAME=? AND DATE=? order by DECISIONTIME desc", [infoGroup.table, name, str], function(err, results) {
-				console.log(JSON.stringify(results));
-				if (err) throw err;
-				if(results.length == 0){
-					console.log("this group hasnt made any bookings for this room~");
-					callback(false);
-				} else if (results[0]["DECISION"] == "BOOK") {
-					console.log("this group has alr booked a room ooops");
-					callback(true);
-				} else if (results[0]["DECISION"] == "CANCEL") {
-					console.log("this group has cancelled their previous booking. Can make another booking.");
-					callback(false);
-				} 
-			});	
-		});
-	}
+	
  
  	bookedTimeslotPart1 = function(date, x, emptyarr, callback) {//2x + 8, x starts from 0 and ends at 7 (no x = 8)
  		if (x < 7) {
@@ -405,13 +323,6 @@ function db(){
  			callback(emptyarr);
  		})
  	} //[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]
-	
-	this.bookedTimeslotForTheDay = function(date, callback) {//exactly the same as bookedTimeslot
-		bookedTimeslotPart1(date, 0, [], function(emptyarr) {
- 			callback(emptyarr);
- 		})
- 	} //[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]
-	}
 
 	emptyTimeslotPart1 = function(date, x, emptyarr, callback) {//2x + 8, x starts from 0 and ends at 7 (no x = 8)
  		if (x < 7) {
@@ -419,6 +330,7 @@ function db(){
 			processDateWithUnderscore(date, function(str) {
 	 			connection.query('select ?? from ?? where ??="NONE"', ['ROOMNUMBER', 'Room_record'+str, a], function(err, resul) {
 	 				if (err) throw err;
+	 				console.log("$$$" + x + JSON.stringify(resul));
 	 				//resul: [{ROOMNUMBER:'103'}, {ROOMNUMBER:'104'}, {ROOMNUMBER:'105'}]
 	 				if(resul.length == 0) {
 	 					emptyTimeslotPart1(date, x+1, emptyarr, callback);
@@ -439,12 +351,6 @@ function db(){
  		})
  	}
 
- 	this.emptyTimeslotForTheDay = function(date, callback) {//exactly the same as emptyTimeslot, used externally
- 		emptyTimeslotPart1(date, 0, [], function(emptyarr) {
- 			callback(emptyarr);
- 		})
- 	}
-
 	allEmptyTimeslotsFor5DaysPart1 = function(emptyarr, the5DaysString, i, callback) {
 		console.log(i);
 		if (i > 0) {
@@ -456,20 +362,6 @@ function db(){
 			callback(emptyarr);
 		}
 	}
-	
-	this.allEmptyTimeslotsFor5Days = function(callback) {
-		all5Days(function(arr) {
-			allEmptyTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
-				callback(arrr);
-			})
-		})	
-	}
-	// output (same format)
-	// [["20 7 2017",[]],
-	// ["21 7 2017",[]],
-	// ["22 7 2017",[]],
-	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
-	// ["24 7 2017",[]]]
 
  	allBookedTimeslotsFor5DaysPart1 = function(emptyarr, the5DaysString, i, callback) {
 		console.log(i);
@@ -482,23 +374,6 @@ function db(){
 			callback(emptyarr);
 		}
 	}
-	
-	this.allBookedTimeslotsFor5Days = function(callback) {
-		all5Days(function(arr) {
-			allBookedTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
-				callback(arrr);
-			})
-		})	
-	}
-	// output
-	// [["20 7 2017",[]],
-	// ["21 7 2017",[]],
-	// ["22 7 2017",[]],
-	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
-	// ["24 7 2017",[]]]
-
-
-
 
 	allTimeslotsFor5DaysIter = function(emptyarr, all5DaysArray, i, callback) {//[], [], 5, callback
 		if (all5DaysArray.length == 0) {
@@ -524,7 +399,7 @@ function db(){
  		} else if (i > 0) {
  			console.log(5 - i);
  			processDateWithHyphen(the5DaysString[5 - i], function(str) {
- 				connectionBook.query("select * from ?? where GROUPNAME=? and DATE=?", [infoBook.table, grp, str], function(err, resul) {
+ 				connectionBook.query("select * from ?? where GROUPID=? and DATE=?", [infoBook.table, grp, str], function(err, resul) {
  					emptyarr.push([str].concat(resul));
  					groupBookingStateIter(grp, emptyarr, the5DaysString, i - 1, callback);
  				})
@@ -534,7 +409,106 @@ function db(){
  		}
  	}
 
- 	this.groupBookingState = function(grp, callback) {
+ 	groupBookingState = function(grp, callback) {
+ 		groupBookingStateIter(grp, [], [], 5, function(arr) {
+ 			callback(arr); //[["2017-7-21"],["2017-7-22"],["2017-7-23"],["2017-7-24"],["2017-7-25"]]
+ 		})
+ 	}
+ 	//output:
+ 	// [["2017-7-20"],
+ 	// ["2017-7-21"],
+ 	// ["2017-7-22"],
+ 	// ["2017-7-23",{"GROUPNAME":"moguempire","ROOMNUMBER":"103","DATE":"2017-07-22T16:00:00.000Z","SLOTSTART":"08:00:00","SLOTEND":"10:00:00","DECISIONTIME":"2017-07-20T01:53:54.000Z"}],
+ 	// ["2017-7-24"]]
+
+	hasGroupBookedAnyFor5DaysPart1 = function(name, emptyarr, statearr, i, callback) {
+		if(statearr.length == 0) {
+			groupBookingState(name, function(arr) {
+				hasGroupBookedAnyFor5DaysPart1(name, emptyarr, arr, i, callback);
+			})
+		} else if (i < 5) {
+			if(statearr[i].length > 1) {
+				emptyarr.push(true);
+				hasGroupBookedAnyFor5DaysPart1(name, emptyarr, statearr, i + 1, callback);
+			} else {
+				emptyarr.push(false);
+				hasGroupBookedAnyFor5DaysPart1(name, emptyarr, statearr, i + 1, callback);
+			}		
+		} else if (i >= 5) {
+			callback(emptyarr);
+		}
+	}
+
+
+ /*----group book and group booking state API-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+ 	//precondition: room and timeslot all exist
+	//              the group is complete//including if it exists
+	//process: check if the prefered timeslot is taken
+	//         check if the group alr booked any room
+	//postcondition: if success
+	this.groupBook = function(name, date, room, timeslot, callback) { //"group name", "101", "8TO10", callback
+		isTimeslotEmpty(date, timeslot, room, function(boo) {
+			if(boo == true) {
+				console.log("alright the roooms empty and u can proceed");
+				hasGroupBooked(name, date, function(booo) {
+					if (booo == false) {
+						console.log("empty group! can proceed!");
+						groupBookPart1(name, date, room, timeslot, function(bool) {
+							if(bool == true) {
+								console.log("updated Group_record! now prepare to update Room_record!");
+								groupBookPart2(name, date, room, timeslot, function(bol) {
+									console.log("Room_record updated. congratz.");
+									callback(true);
+								})
+							}
+						});
+					} else {
+						console.log("group made booking!");
+						callback(false);
+					}
+				});
+			} else {
+				console.log("nahhh");
+				callback(false);
+			}
+		});
+	}
+
+	this.groupCancel = function(name, date, room, timeslot, callback) {
+		isTimeslotEmpty(date, timeslot, room, function(boo) {
+			if(boo == false) {
+				console.log("yes the room is occupied, is this room occupied by this group?");
+				hasGroupBookedRoom(name, date, room, function(booo) {
+					if(booo == false) {
+						console.log("yo this group didnt book this room");
+						callback(false);
+					} else {
+						console.log("yes this room is booked by this group");
+						groupCancelPart1(name, date, room, timeslot, function(bol) {
+							if(bol == true) {
+								console.log("canceled the record in Group_record. Now proceed onto Room_record.");
+								groupCancelPart2(name, date, room, timeslot, function(bool) {
+									if(bool == true) {
+										console.log("canceled the record in Room_record.");
+										callback(true);
+									} 
+								});
+							}
+						});
+					}
+				});
+			} else {
+				console.log("nah the room is not occupied.");
+				callback(false);
+			}
+		})
+	}
+
+
+
+ 	this.groupBookingStateFor5Days = function(grp, callback) {
  		groupBookingStateIter(grp, [], [], 5, function(arr) {
  			callback(arr);
  		})
@@ -545,6 +519,83 @@ function db(){
  	// ["2017-7-22"],
  	// ["2017-7-23",{"GROUPNAME":"moguempire","ROOMNUMBER":"103","DATE":"2017-07-22T16:00:00.000Z","SLOTSTART":"08:00:00","SLOTEND":"10:00:00","DECISIONTIME":"2017-07-20T01:53:54.000Z"}],
  	// ["2017-7-24"]]
-};
+
+ 	
+	this.hasGroupBookedAnyForTheDay = function(name, date, callback) {//"moguempire", "101", "dd mm year"/used externally, same as hasGroupBooked
+		processDateWithHyphen(date, function(str) {
+			connectionGroup.query("select * from ?? where GROUPID=? AND DATE=?", [infoGroup.table, name, str], function(err, results) {
+				console.log(JSON.stringify(results));
+				if (err) throw err;
+				if(results.length == 0){
+					console.log("this group hasnt made any bookings on " + date);
+					callback(false);
+				} else if (results[0]["CANCEL_DECISION"] == null) {
+					console.log("this group has alr booked on " + date);
+					callback(true);
+				} else if (results[0]["CANCEL_DECISION"] == "CANCEL") {
+					console.log("this group has cancelled their previous booking. Can make another booking.");
+					callback(false);
+				} 
+			});	
+		});
+	}
+
+	this.hasGroupBookedAnyFor5Days = function(name, callback) {
+		hasGroupBookedAnyFor5DaysPart1(name, [], [], 0, function(arr) {
+			callback(arr);
+		})
+	}//[ false, false, false, true, false ]
+
+/*----Timeslot API-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+ 	this.allTimeslotsFor5Days = function(callback) {
+		allTimeslotsFor5DaysIter([], [], 5, function(arr) {
+			callback(arr);
+		})
+	}
+
+	this.bookedTimeslotForTheDay = function(date, callback) {//exactly the same as bookedTimeslot
+		bookedTimeslotPart1(date, 0, [], function(emptyarr) {
+ 			callback(emptyarr);
+ 		})
+ 	} //[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]
+	
+
+	this.emptyTimeslotForTheDay = function(date, callback) {//exactly the same as emptyTimeslot, used externally
+ 		emptyTimeslotPart1(date, 0, [], function(emptyarr) {
+ 			callback(emptyarr);
+ 		})
+ 	}
+
+	this.allEmptyTimeslotsFor5Days = function(callback) {
+		all5Days(function(arr) {
+			allEmptyTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
+				callback(arrr);
+			})
+		})	
+	}
+	// output (same format)
+	// [["20 7 2017",[]],
+	// ["21 7 2017",[]],
+	// ["22 7 2017",[]],
+	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
+	// ["24 7 2017",[]]]
+	
+	this.allBookedTimeslotsFor5Days = function(callback) {
+		all5Days(function(arr) {
+			allBookedTimeslotsFor5DaysPart1([], arr, 5, function(arrr) {
+				callback(arrr);
+			})
+		})	
+	}
+	// output
+	// [["20 7 2017",[]],
+	// ["21 7 2017",[]],
+	// ["22 7 2017",[]],
+	// ["23 7 2017",[["8TO10",{"ROOMNUMBER":"103"},{"ROOMNUMBER":"104"}],["10TO12",{"ROOMNUMBER":"104"}],["14TO16",{"ROOMNUMBER":"105"}],["16TO18",{"ROOMNUMBER":"103"}]]],
+	// ["24 7 2017",[]]]
+
+
+}
 
 module.exports = db;
