@@ -27,31 +27,23 @@
 
     <h1><%= groupID %></h1>
     <p>Welcome to viewBooking page, <%= profile.displayName %></p>
-<!--     <% if (groupHasMadeBooking == true) { %>
-      <% for(var i=0;i < table.length; i++) {%>
-        <h4>Room:<%= table[i].ROOMNUMBER %></h4>
-        <h4> Your Timeslot </h4>
-        <p style="color:red">starts at:<%=table[i].SLOTSTART %> </p>
-        <p style="color:green">ends at:<%=table[i].SLOTEND %> </p>
-        <h4> Booking Time: </h4>
-        <p><%= table[i].DECISIONTIME %></p>
-        <br>
-      <% } %>
-    <% } %>
-    <% if (groupHasMadeBooking == true) { %>
-      <button onclick="location.href='/booking?groupName=<%= groupName %>'"> book </button>
-    <% } %> -->
+
 
     <% for (var d=0; d < 5; d++) { %>
       <div>
         <p>DATE:<%=schedule[d][0]%> </p>
-        <% for (var i=1; i < schedule[d].length; i++) { %>
-          <p><%=schedule[d][i].GROUPID%></p>
-          <p><%=schedule[d][i].ROOMNUMBER%></p>
-          <p><%=schedule[d][i].SLOTSTART%></p>
-          <p><%=schedule[d][i].SLOTEND%></p>
-          <p><%=schedule[d][i].DECISIONTIME%></p>
+        <% if (schedule[d].length == 1) { %>
+          <p> No Booking Slot </p>
+        <% } else { %>
+          <% for (var i=1; i < schedule[d].length; i++) { %>
+            <p><%=schedule[d][i].GROUPID%></p>
+            <p><%=schedule[d][i].ROOMNUMBER%></p>
+            <p><%=schedule[d][i].SLOTSTART%></p>
+            <p><%=schedule[d][i].SLOTEND%></p>
+            <p><%=schedule[d][i].DECISIONTIME%></p>
+          <% } %>
         <% } %>
+        
       </div>
     <% } %>
 

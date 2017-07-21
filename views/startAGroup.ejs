@@ -5,24 +5,22 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-  	// [{"GROUPNAME":"moguempire"},
-	// {"GROUPNAME":"moguempireee"},
-	// {"GROUPNAME":"wenxinnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"}]
-	{profile:req.user, groupName:resul}
+	{profile:req.user}
   	<form action="/manageGroup", method="POST">
     	<fieldset>
     		<label>Register Group Form </label> <br/>
         	User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
         	NUSNETSID: <input type="text" name='usenusnetsid' value='<%=profile.NusNetsID%>' disabled> <br/>
         	Member 1 Email (Your own): <input type="text" name='member1email' value="<%=profile.emails[0].value%>" disabled> <br/>
-        	Group: <input type='text' name='groupname' required> <br/>
+        	Group Name: <input type='text' name='groupname' required> <br/>
+          Member 2 NUSNETS ID: <input type="text" name='member2ID' required>
         	Member 2 Email: <input type="text" name='member2email' required> <br/>
+          Member 3 NUSNETS ID: <input type="text" name='member3ID' required>
         	Member 3 Email: <input type="text" name='member3email' required> <br/>
+          Member 4 NUSNETS ID: <input type="text" name='member4ID' required>
         	Member 4 Email: <input type="text" name='member4email' required> <br/>
-        	Member 5 Email (optional if your group does not have a fifth member): <input type="text" name='member5email'> <br/>
+          Member 5 NUSNETS ID(optional if your group does not have a fifth member): <input type="text" name='member5ID'>
+        	Member 5 Email : <input type="text" name='member5email'> <br/>
 
         	<input type="submit" value="I AGREE TO REGISTER INTO THIS ROOM BOOKING SYSTEM"/>
      		

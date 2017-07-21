@@ -92,7 +92,7 @@ create table Room_record_Fri_Jul_21_2017 (
 	16TO18 varchar(225) not null default "NONE",
 	18TO20 varchar(225) not null default "NONE",
 	20TO22 varchar(225) not null default "NONE",
-	DATEOFTABLE datetime not null default NOW(),
+	DATEOFTABLE date not null,
 	primary key (ROOMNUMBER)
 );
 -- create table Room_record-Fri-Jul-21-2017 (ROOMNUMBER varchar(225) not null,8TO10 varchar(225) not null default "NONE",10TO12 varchar(225) not null default "NONE",12TO14 varchar(225) not null default "NONE",14TO16 varchar(225) not null default "NONE",16TO18 varchar(225) not null default "NONE",18TO20 varchar(225) not null default "NONE",20TO22 varchar(225) not null default "NONE",DATEOFTABLE datetime not null default NOW(),primary key (ROOMNUMBER))

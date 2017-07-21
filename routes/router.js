@@ -10,9 +10,9 @@ var db_book = new db_boo();
 
 isLoggedIn = function (req,res,next) {
   if(req.isAuthenticated()){
-    console.log("1111111111((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");
-    console.log(req);
-    console.log("2222222222((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");    
+    // console.log("1111111111((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");
+    // console.log(req);
+    // console.log("2222222222((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");    
     db_user.isUserFromRVRC(req.user.NusNetsID, req.user.displayName, function(id, name, boo) {
       if(boo == true) {
         return next();
@@ -192,10 +192,8 @@ module.exports = function (app,passport) {
   app.get("/register", isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
-        console.log("i m at routing /register-hasUserRegistered, boo==true, this user has registered. Redirecting to viewRegister page.");
         res.redirect("/manageRegister");
       } else if (boo == false) {
-        console.log("i m at routing /register-hasUserRegistered, boo==false, this user hasnt registered. Staying on this page and let her register.");
         res.render("register.ejs", {profile:req.user});
       }
     });
@@ -204,23 +202,15 @@ module.exports = function (app,passport) {
   app.post("/viewRegister", isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
-        console.log("i m at routing /viewRegister-hasUserRegistered, boo==true, this user has registered. Check if this guy alr has a group.");
+        //user is registered. check if the user has a group
         db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grpname, booo) {
-          if (booo == true) {
-            console.log('i m at routing /viewRegister-hasUserRegistered/getUserGroup, booo == true, this guy has a grp. Redirect to viewInfoByName');
+          if (booo == true) { //user has a group
             res.redirect('/viewBooking');
-          } else if (booo == false) {
-            console.log('i m at routing /viewRegister-hasUserRegistered/getUserGroup, booo == false, this guy doesnt have a grp. Register him first. Stay on this page and let him get a group');     
-            db_user.addUserToUserInfo(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(bool) {
-              if(bool == true) {
-                console.log("adding the user.");
-                res.redirect('/manageRegister');              
-              }
-            });
+          } else if (booo == false) { //user doesnt have a group
+            res.redirect('/manageRegister'); 
           }
         });
-      } else if (boo == false) {
-        console.log("i m at routing /viewRegister-hasUserRegistered, boo==false, this user hasnt registered. register him now.");
+      } else if (boo == false) {//user is not registered. Register him into the system
         db_user.addUserToUserInfo(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(namme, idd, emaill, booll) {
             console.log("adding user--booll == " + booll);
             res.redirect('/manageRegister');
@@ -232,18 +222,44 @@ module.exports = function (app,passport) {
   app.get('/manageRegister', isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
-        console.log("i m at routing /manageRegister-hasUserRegistered, boo==true, this user has registered. Check if this guy alr has a group.");
-        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grpname, booo) {
+        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grpid, booo) {
           if (booo == true) {
-            console.log('i m at routing /manageRegister-hasUserRegistered/getUserGroup, booo == true, this guy has a grp. Redirect to viewInfoByName');
-            res.redirect('/viewBooking');
+            //has a group
+            db_user.IfGroupComplete(grpid, function(groupid, bool) {
+              if (bool == true) {
+                //group is complete, allow invite and dismiss
+                res.render('manageRegister.ejs', 
+                           {profile:req.user, 
+                            groupID:grpid, 
+                            inviteButton:true, 
+                            dismissButton:true,
+                            JoinButton:false,
+                            StartButton:false});
+              } else {
+                //group is incomplete. stay on this page.
+                //disable [join a group] or [start a group]
+                //enable [invite members] and [dissmiss a group]
+                res.render('manageRegister.ejs', 
+                           {profile:req.user, 
+                            groupID:grpid, 
+                            inviteButton:true, 
+                            dismissButton:true,
+                            JoinButton:false,
+                            StartButton:false}); 
+              }
+            })
           } else if (booo == false) {
-            console.log('i m at routing /manageRegister-hasUserRegistered/getUserGroup, booo == false, this guy doesnt have a grp. ask him to get a group first');     
-            res.render('manageRegister.ejs', {profile:req.user});
+            //doesnt have a group
+            res.render('manageRegister.ejs', 
+                       {profile:req.user,
+                        groupID:false,
+                        inviteButton:false,
+                        dismissButton:false,
+                        JoinButton:true,
+                        StartButton:true});
           }
         });      
       } else if (boo == false) {
-        console.log("i m at routing/manageRegister, boo == false, this guy has not registered. redirect him to the register page.");
         res.redirect('/register');
       }
     })
@@ -254,14 +270,34 @@ module.exports = function (app,passport) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
         //registered check grp
-        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
-          if (bool == true) {
+        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, booo) {
+          if (booo == true) {
             //in a group.
             res.redirect('/viewBooking');
-          } else {
-            db_book.allGroup(function(resul) {
-              res.render('startAGroup.ejs', {profile:req.user, groupName:resul});
+            db_user.IfGroupComplete(grpid, function(groupid, bool) {
+              if (bool == true) {
+                //group is complete, direct to viewBooking
+                res.redirect('/viewBooking');
+              } else {
+                //group is incomplete. stay on this page.
+                //redirect to manageRegister
+                res.redirect('/manageRegister'); 
+              }
             });
+          } else if (booo == false) {
+            //doesnt have a group
+            res.render('startAGroup.ejs', 
+                       {profile:req.user,
+                        groupID:false});
+            //output to manageGroup in req.body: { groupname: 'wenxiaoxin',
+                                                // member2ID: '1',
+                                                // member2email: '1@.com',
+                                                // member3ID: '2',
+                                                // member3email: '2@.com',
+                                                // member4ID: '3',
+                                                // member4email: '3@.com',
+                                                // member5ID: '',
+                                                // member5email: '' }
           }
         });
       } else {
@@ -280,9 +316,9 @@ module.exports = function (app,passport) {
             //in a group.
             res.redirect('/viewBooking');
           } else {
-            db_book.allGroup(function(resul) {
-              res.render('joinAGroup.ejs', {profile:req.user, groupName:resul});
-            });
+            //not in a group
+            res.render('joinAGroup.ejs', {profile:req.user});
+            //output to /manageGroup in req.body: { usergroupID: '1701', usertoken: 'asdfasdf' }
           }
         });
       } else {
@@ -292,11 +328,21 @@ module.exports = function (app,passport) {
   });
 
 
+
+//今天就到这里了，明天接着写吧。。/
+//routes and ejs to do: invite member(5th and others who didnt join the group), dismissGroup
+//new functions of which member is not added, token api are needed. 
+
   //receive data from startAGroup and joinAGroup
   //if req.body has data from startAGroup, register the group and member1 email, send email to the rest of the members to register;
   //if req.body has data from joinAGroup, register the user into this group.
+  //if it's start group, add userID, grpID, token to a table, send email;
+  //if it's join group, check if its in table, if it is, add into the group, delete from the table. 
   app.post('/manageGroup', isLoggedIn, function(req, res) {
           //check if this guy is registered first then if is in a grp 
+    console.log('11111111111111111111111111111111111111111111111');
+    console.log(req.body);
+    console.log('22222222222222222222222222222222222222222222222');
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
         //registered check grp

@@ -7,6 +7,13 @@
 
   </head>
   <body>
+
+  <% if (groupID == false) { %>
+    <h4>You are currently groupless</h4>
+  <% } else { %>
+    <h4>You are currently in Group <%=groupID%> </h4>
+  <% } %>
+  
     <div>
       <button onclick="b()">Logout</button>
       <script>
@@ -15,19 +22,69 @@
         }
       </script>
     </div>
+
     <div>
-      <button onclick="c()">Start a Group</button>
+      <% if (inviteButton == false) { %>
+        <button onclick="a()" disabled>view booking info</button>
+      <% } else { %>
+        <button onclick="a()">view booking info</button>
+      <% } %>
+      <script>
+        function a(){
+            window.location.href='/viewBooking';
+        }
+      </script>
+    </div>
+
+
+    <div>
+      <% if (StartButton == false) { %>
+        <button onclick="c()" disabled>Start a Group</button>
+      <% } else { %>
+        <button onclick="c()">Start a Group</button>
+      <% } %>
       <script>
         function c(){
             window.location.href='/startAGroup';
         }
       </script>
     </div>
+
     <div>
-      <button onclick="d()">Join a Group</button>
+      <% if (JoinButton == false) { %>
+        <button onclick="d()" disabled>Join a Group</button>
+      <% } else { %>
+        <button onclick="d()">Join a Group</button>
+      <% } %>
       <script>
         function d(){
             window.location.href='/joinAGroup';
+        }
+      </script>
+    </div>
+
+    <div>
+      <% if (inviteButton == false) { %>
+        <button onclick="e()" disabled>Invite Members</button>
+      <% } else { %>
+        <button onclick="e()">Invite Members</button>
+      <% } %>
+      <script>
+        function e(){
+            window.location.href='/inviteMembers';
+        }
+      </script>
+    </div>
+
+    <div>
+      <% if (dismissButton == false) { %>
+        <button onclick="f()" disabled>Dismiss Your Group</button>
+      <% } else { %>
+        <button onclick="f()">Dismiss Your Group</button>
+      <% } %>
+      <script>
+        function f(){
+            window.location.href='/dismissAGroup';
         }
       </script>
     </div>

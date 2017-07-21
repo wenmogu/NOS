@@ -5,26 +5,15 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-  	// [{"GROUPNAME":"moguempire"},
-	// {"GROUPNAME":"moguempireee"},
-	// {"GROUPNAME":"wenxinnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"},
-	// {"GROUPNAME":"wenxinnnnnnnnnnnnn"}]
-	{profile:req.user, groupName:resul}
+
   	<form action="/manageGroup", method="POST">
     	<fieldset>
-    		<label>Choose Your Group </label> <br/>
+    		<label>JOIN A GROUP</label> <br/>
         	User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
         	NUSNETSID: <input type="text" name='usenusnetsid' value='<%=profile.NusNetsID%>' disabled> <br/>
         	Email: <input type="text" name='useremail' value="<%=profile.emails[0].value%>" disabled> <br/>
-        	Group: <select name="groupjoined">
-
-        			  <%for (var i = 0; i < groupName.length; i++) { %>  
-        	                <option id="selected<%=i %>"> <%=groupName[i].GROUPNAME%> </option>
-        			  <%} %>
-        	        </select> <br/>
-
+        	Group ID of the group you want to join:<input type="text" name='usergroupID' required> <br/> 
+          Token you received in the email sent to you: <input type="text" name='usertoken' required> <br/> 
         	<input type="submit" value="I WANT TO JOIN THIS GROUP"/>
      		
     	</fieldset>

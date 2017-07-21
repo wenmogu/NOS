@@ -42,7 +42,7 @@ function wrapper() {
 		var date = new Date();
 		var time = date.getTime();
 		date.setTime(time + 345600000);
-		var arr = d.toLocaleDateString().split('/');
+		var arr = date.toLocaleDateString().split('/');
 		var ar = [];
 		ar[0] = arr[2];
 		ar[1] = arr[0];
@@ -116,7 +116,7 @@ function wrapper() {
 	// 	});
 	// }
 
-	this.createTable = function(datestr, DATEstr) {
+	createTable = function(datestr, DATEstr) {
 			createTableStatement(datestr, function(tableStatement) {
 				createTableQuery(tableStatement, datestr, function(datee) {
 					createTableContent(datee, 6, 0, DATEstr, function(datestrr) {
@@ -136,7 +136,7 @@ function wrapper() {
 		})
 	}
 
-	dateStringFordropTable = function(callback) { //yesterday's string
+	dateStringForDropTable = function(callback) { //yesterday's string
 		var date = new Date();
 		var time = date.getTime();
 		date.setTime(time - 86400000);
@@ -144,7 +144,7 @@ function wrapper() {
 		callback(str);
 	}
 
-	this.dropTable = function(str) {
+	dropTable = function(str) {
 			connection.query('drop table ??', ['Room_record'+str], function(er, res) {
 				if (er) throw er;
 				console.log(res);
