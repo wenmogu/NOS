@@ -15,12 +15,19 @@
   </div>
 {profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp}
 //[{"GROUPNAME":"moguempireee","ROOMNUMBER":"101","SLOTSTART":"10:00:00","SLOTEND":"12:00:00","DECISIONTIME":"2017-07-13T17:11:50.000Z"}]
-
+<br/>
+{profile:req.user,
+                                groupID:grpid,
+                               schedule:schedule}
+<br/>
+<%=profile%><br/>
+<%=groupID%><br/>
+<%=schedule%><br/>
   <div>
 
-    <h1><%= groupName %></h1>
+    <h1><%= groupID %></h1>
     <p>Welcome to viewBooking page, <%= profile.displayName %></p>
-    <% if (groupHasMadeBooking == true) { %>
+<!--     <% if (groupHasMadeBooking == true) { %>
       <% for(var i=0;i < table.length; i++) {%>
         <h4>Room:<%= table[i].ROOMNUMBER %></h4>
         <h4> Your Timeslot </h4>
@@ -33,8 +40,20 @@
     <% } %>
     <% if (groupHasMadeBooking == true) { %>
       <button onclick="location.href='/booking?groupName=<%= groupName %>'"> book </button>
-    <% } %>
+    <% } %> -->
 
+    <% for (var d=0; d < 5; d++) { %>
+      <div>
+        <p>DATE:<%=schedule[d][0]%> </p>
+        <% for (var i=1; i < schedule[d].length; i++) { %>
+          <p><%=schedule[d][i].GROUPID%></p>
+          <p><%=schedule[d][i].ROOMNUMBER%></p>
+          <p><%=schedule[d][i].SLOTSTART%></p>
+          <p><%=schedule[d][i].SLOTEND%></p>
+          <p><%=schedule[d][i].DECISIONTIME%></p>
+        <% } %>
+      </div>
+    <% } %>
 
     </div>
 
@@ -48,11 +67,10 @@
     }
     </script>
 
-    <button onclick="z()">view general info</button>
+    <button onclick="z()">Book a slot at info page</button>
     <script>
     function z(){
         window.location.href='/info';
-
     }
     </script>
 

@@ -10,9 +10,9 @@ var db_book = new db_boo();
 
 isLoggedIn = function (req,res,next) {
   if(req.isAuthenticated()){
-    // console.log("1111111111((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");
-    // console.log(req);
-    // console.log("2222222222((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");    
+    console.log("1111111111((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");
+    console.log(req);
+    console.log("2222222222((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");    
     db_user.isUserFromRVRC(req.user.NusNetsID, req.user.displayName, function(id, name, boo) {
       if(boo == true) {
         return next();
@@ -45,19 +45,6 @@ module.exports = function (app,passport) {
         failureRedirect: '/login' }));
 
   // routes 
-  // app.get("/info", function (req, res) { // to the general room info page, where you dont need to log in to view 
-  //   db_manager.totalTable(function (result) {
-  //     console.log("###########@@@@@@@@@@@@@@" + typeof(req.user));
-  //     if (JSON.stringify(req.user) == undefined) {
-  //       res.render('info.ejs', {profile: {displayName:"guest"}, table: result, userBooking: [], array:[]});
-  //     } else {
-  //       console.log("sadfsadfsadfsdfsdfsadfasdfasdfsadfs");
-  //       db_manager.bookedRoomNumber(req.user.displayName, req.user.emails[0].value, function (resul) {
-  //         res.render('info.ejs', {profile : req.user, table: result, userBooking: resul, content: 'login.ejs'});
-  //       });  
-  //     }
-  //   });
-  // })
 
   // app.get("/info", function(req, res) {
   //   db_book.bookedTimeslot(function(resultt) { //resultt is an array of [roomnumber~8, roomnumber~18, ...]
@@ -133,35 +120,35 @@ module.exports = function (app,passport) {
   })
 
   
-  app.get("/viewBooking", isLoggedIn, function(req, res) {
-    db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(nname, iid, eemail, bboo) {
-      if (bboo == true) {
-        //registered. check if in a group
-        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grp, boo) {
-          if (boo == false) {
-            console.log("i m at viewBooking routing/getUserGroup. This guy does not have a group.");
-            res.redirect("/manageRegister");
-          } else if (boo == true) {
-            console.log("i m at viewBooking routing/getUserGroup. This guy is in a group.");
-            console.log("printing the booking info by this guy's group");
-            db_book.groupBookingState(grp, function(resul, boo) { //resul is the booking schedule for today and the next 5 days.
-              if (boo == false) {
-                console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group did not make any booking. ");
-                res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking:false, table:[], groupName:grp});
-              } else if (boo == true) {
-                console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group has made a booking. ");
-                res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp});
-              }
-            });
-          }
-        });
-      } else {
-        //havnt registed. register first.
-        res.redirect('/register');
-      }
-    })
+  // app.get("/viewBooking", isLoggedIn, function(req, res) {
+  //   db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(nname, iid, eemail, bboo) {
+  //     if (bboo == true) {
+  //       //registered. check if in a group
+  //       db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grp, boo) {
+  //         if (boo == false) {
+  //           console.log("i m at viewBooking routing/getUserGroup. This guy does not have a group.");
+  //           res.redirect("/manageRegister");
+  //         } else if (boo == true) {
+  //           console.log("i m at viewBooking routing/getUserGroup. This guy is in a group.");
+  //           console.log("printing the booking info by this guy's group");
+  //           db_book.groupBookingState(grp, function(resul, boo) { //resul is the booking schedule for today and the next 5 days.
+  //             if (boo == false) {
+  //               console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group did not make any booking. ");
+  //               res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking:false, table:[], groupName:grp});
+  //             } else if (boo == true) {
+  //               console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group has made a booking. ");
+  //               res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp});
+  //             }
+  //           });
+  //         }
+  //       });
+  //     } else {
+  //       //havnt registed. register first.
+  //       res.redirect('/register');
+  //     }
+  //   })
 
-  });
+  // });
 
   app.get('/viewBooking', isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
@@ -172,11 +159,17 @@ module.exports = function (app,passport) {
             //user in a group, check if group is complete
             db_user.IfGroupComplete(resul, function(grpid, booln) {
               if (booln == true) {
-                //group is complete, allow viewing group booking history
+                //group is complete, allow viewing group booking schedule
                 db_book.groupBookingStateFor5Days(grpid, function(schedule) {
                   res.render("viewInfoByName.ejs", 
                               {profile:req.user,
+                                groupID:grpid,
                                schedule:schedule}
+  // [["2017-7-20"],
+  // ["2017-7-21"],
+  // ["2017-7-22"],
+  // ["2017-7-23",{"GROUPNAME":"moguempire","ROOMNUMBER":"103","DATE":"2017-07-22T16:00:00.000Z","SLOTSTART":"08:00:00","SLOTEND":"10:00:00","DECISIONTIME":"2017-07-20T01:53:54.000Z"}],
+  // ["2017-7-24"]]
                   );
                 })
               } else {
