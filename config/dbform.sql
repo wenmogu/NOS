@@ -82,6 +82,13 @@ create table RVRC_User (
 	primary key(NUSNETSID)
 )
 
+create table ID_TOKEN_EMAIL (
+	NUSNETSID varchar(225) not null,
+	TOKEN varchar(225) not null,
+	EMAIL varchar(225) not null,
+	GROUPID int not null
+)
+
 -- decision: either "cancel" or "book"
 create table Room_record_Fri_Jul_21_2017 (
 	ROOMNUMBER varchar(225) not null,

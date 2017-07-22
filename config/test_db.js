@@ -5,12 +5,26 @@ var Groupdb = require('./db_user');
 var gb = require('./db_groupBooking');
 var user = new Groupdb();
 var groupBooking = new gb();
- 
+
+var de = require('./dumpEmail');
+var dumpEmail = new de();
+
+var t = require('./token');
+var token = new t();
+// token.createTokenForSomePpl(['e0052753', 'e0032334'], ['mcshuo@vip.qq.com', 'krisd3v@gmail.com'], 1234, function(boo) {
+// 	console.log("sent");
+// })
+// dumpEmail.scheduleExportRoomRecordOfYersterday("C:\\ABC", "nus_db", "root", "LordMushroom2015", "25 15 * * *");
+// dumpEmail.sendAttachment('e0052753@u.nus.edu', "c:\\ABC\\group_info.txt",'3 15 * * *');
+
+user.getGroupLeader('1701', function(id, name, email){console.log(id + " " + name + " " + email);});
 // user.IfGroupAlrExist("1701", function(name, boo, result) {
 //   console.log(boo);
 //   console.log(result);
 // })
-
+// user.whichMemberSlotEmpty('1701', function(ab) {
+// 	console.log(ab);
+// })
 
 // groupBooking.allBookedTimeslotsFor5Days(function(arr) {
 //   console.log(JSON.stringify(arr));
@@ -162,11 +176,11 @@ groupBooking.allTimeslotsFor5Days(function(ar) {
 // })
 var ct = require('./tableRenewal');
 var tableRenewal = new ct();
-tableRenewal.dateStringForSomeDay(0, function(str) {
-  tableRenewal.dateStringForSomeDATE(0, function(strr) {
-    tableRenewal.createTable(str, strr);
-  })
-})
+// tableRenewal.dateStringForSomeDay(0, function(str) {
+//   tableRenewal.dateStringForSomeDATE(0, function(strr) {
+//     tableRenewal.createTable(str, strr);
+//   })
+// })
 
 
 

@@ -8,6 +8,28 @@ var db_user = new db_use();
 var db_boo = require("../config/db_groupBooking");
 var db_book = new db_boo();
 
+var t = require('./token');
+var db_token = new t();
+
+//套路：
+	// db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
+ //      if (boo == true) {
+ //        //registered 
+ //        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+ //          if (bool == true) {
+ //            //in a group.
+ //            res.redirect('/viewBooking');
+ //          } else {
+ //          	//not in a group
+ //            //res....
+ //          }
+ //        });
+ //      } else {
+ //      	//not registered
+ //        res.redirect('/register');
+ //      }
+ //    });
+
 isLoggedIn = function (req,res,next) {
   if(req.isAuthenticated()){
     // console.log("1111111111((((($$$$$$$$$$$@@@@@@@@@@@@!!!!!!!!!!!!!!----------------------------------------------------------------------");
@@ -224,29 +246,26 @@ module.exports = function (app,passport) {
       if (boo == true) {
         db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grpid, booo) {
           if (booo == true) {
-            //has a group
-            db_user.IfGroupComplete(grpid, function(groupid, bool) {
-              if (bool == true) {
-                //group is complete, allow invite and dismiss
-                res.render('manageRegister.ejs', 
+            db_user.whichMemberSlotEmpty(grpid, function(arrOrNull) {
+            	if(arrOrNull.length == 0) {
+            		//group full. no one can add in anymore.
+            		res.render('manageRegister.ejs', 
+                           {profile:req.user, 
+                            groupID:grpid, 
+                            inviteButton:false, 
+                            dismissButton:true,
+                            JoinButton:false,
+                            StartButton:false});
+            	} else if (arrOrNull.length > 0) {
+            		//group not full. can add in more
+            		res.render('manageRegister.ejs', 
                            {profile:req.user, 
                             groupID:grpid, 
                             inviteButton:true, 
                             dismissButton:true,
                             JoinButton:false,
                             StartButton:false});
-              } else {
-                //group is incomplete. stay on this page.
-                //disable [join a group] or [start a group]
-                //enable [invite members] and [dissmiss a group]
-                res.render('manageRegister.ejs', 
-                           {profile:req.user, 
-                            groupID:grpid, 
-                            inviteButton:true, 
-                            dismissButton:true,
-                            JoinButton:false,
-                            StartButton:false}); 
-              }
+            	} 
             })
           } else if (booo == false) {
             //doesnt have a group
@@ -334,29 +353,87 @@ module.exports = function (app,passport) {
 //new functions of which member is not added, token api are needed. 
 
   //receive data from startAGroup and joinAGroup
-  //if req.body has data from startAGroup, register the group and member1 email, send email to the rest of the members to register;
-  //if req.body has data from joinAGroup, register the user into this group.
   //if it's start group, add userID, grpID, token to a table, send email;
   //if it's join group, check if its in table, if it is, add into the group, delete from the table. 
   app.post('/manageGroup', isLoggedIn, function(req, res) {
           //check if this guy is registered first then if is in a grp 
-    console.log('11111111111111111111111111111111111111111111111');
-    console.log(req.body);
-    console.log('22222222222222222222222222222222222222222222222');
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
-        //registered check grp
+        //registered 
         db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
           if (bool == true) {
             //in a group.
             res.redirect('/viewBooking');
           } else {
-            db_book.allGroup(function(resul) {
-              res.render('manageGroup.ejs', {profile:req.user, groupName:resul});
-            });
+          	//not in a group
+            //res...
+            if (req.body.usergroupID == undefined) {
+            	//data come from startAGroup
+            	//add the req.user into group_info, generate a GroupID, and give her the groupID.
+            	db_user.registerGroup(req.body.groupname, req.user.NusNetsID, function(grpname, grpid) {
+            		//pass out grpname and grpid, used in render
+            		//now generate token and send email to the rest of them
+            		if (member5ID == "") {
+            			//ignore 5th member
+            			db_token.createTokenForSomePpl(req.user.displayName, 
+            									   [member2ID, member3ID, member4ID],
+            									   [member2email, member3email, member4email],
+            									   grpid,
+            									   function(boo) {
+            									   	if(boo == true) {
+            									   		res.render()
+            									   	}
+            									   });
+            		} else {
+            			//send email also to the 5th member
+            			db_token.createTokenForSomePpl(req.user.displayName,
+            									   [member2ID, member3ID, member4ID, member5ID],
+            									   [member2email, member3email, member4email, member5email],
+            									   grpid,
+            									   function(boo) {
+            									   	if(boo == true) {
+            									   		res.render()
+            									   	}
+            									   });
+            		}
+            	});
+            } else {
+            	//data come from joinAGroup
+            	//authenticate first
+            	db_token.checkIfTokenMatch(usergroupID, req.user.NusNetsID, usertoken, function(grupid, netsid, token, boolin) {
+            		if (boolin == true) {
+            			//pass token check. add to groupinfo and userinfo
+            			db_user.registerID(grupid, netsid, function(gid, nid, bullin) {
+            				if (bullin == false) {
+            					//either group is full or this id is alr registered. ask them to check with their fren or contact admin. 
+            					//give the email of the member 1 of this grpid
+            					db_user.getGroupLeader(grupid, function(leaderid, leadername, leaderemail) {
+            						res.render({contactID: leaderid,
+            									contactName: leadername,
+            									contactEmail: leaderemail});
+            					})
+            				} else if (bullin == true) {
+            					//registered! add into userinfo, render success. 
+            					db_user.addGroupToUserInfo(gid, req.user.NusNetsID, req.user.displayName, function(bub) {
+            						console.log(bub);
+            						res.render();
+            					})
+            				} else if (bullin == null) {
+            					//group does not exist. probably alr dismissed. 
+            					//rener failure
+            					res.render();
+            				}
+            			})
+            		} else {
+            			//fail token check. render page indicate failure
+            			res.render();
+            		}
+            	} )
+            }
           }
         });
       } else {
+      	//not registered
         res.redirect('/register');
       }
     });  

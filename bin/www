@@ -92,10 +92,13 @@ function onListening() {
 
 var tableRenewal = require('../config/tableRenewal');
 var scheduler = new tableRenewal();
-scheduler.createTableSchedule('7 0 * * *', function(boo){
+scheduler.createTableSchedule('0 0 * * *', function(boo){
   console.log("table created? "+ boo);
 });
-scheduler.dropTableSchedule('7 0 * * *', function(boo){
+scheduler.dropTableSchedule('1 0 * * *', function(boo){
   console.log("table dropped? "+ boo);
 });
 
+var de = require('../config/dumpEmail');
+var dumpEmail = new de();
+dumpEmail.sendRoomRecordOfYesterday("c:\\ABC", 'nus_db', 'root', 'LordMushroom2015', '0 0 * * *', '1 0 * * *');

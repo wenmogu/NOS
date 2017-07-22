@@ -26,9 +26,9 @@ var mailOptions = {
 	]
 };
 
-function DumpAndEmail() {
+function main() {
 	/*this need change to linux version*/
-	this.csvGet = function(path,database,table,user,password) {
+	csvGet = function(path,database,table,user,password) {
 		const bat = spawn('cmd.exe', ['/c', 'mysqldump','-T',path,database,table,format('--user=%s',user),format('--password=%s',password),'--fields-enclosed-by=\\"','--fields-terminated-by=\\,']);
 		bat.stdout.on('data', function(data){
 			console.log("stdout: ${data}");
@@ -43,8 +43,27 @@ function DumpAndEmail() {
 		});
 
 	}
+
+	dateStringForSomeDay = function(int, callback) {//for testing purpose
+		var date = new Date();
+		var time = date.getTime();
+		date.setTime(time + 86400000 * int);
+		var str = ("_" + date.toDateString()).replace(/ /g, "_");
+		callback(str);
+	}
+
+	scheduleExportRoomRecordOfYersterday = function(path, db, user, password, timeschedule, callback) {
+		dateStringForSomeDay(-1, function(str) {
+			console.log(str);
+			var j = schedule.scheduleJob(timeschedule, function() {
+				csvGet(path, db, "Room_record" + str, user, password);
+				callback(path + "\\" + "Room_record" + str + ".txt");
+			});	
+		});
+	}
+
 	//csvGet("C:\\abc","nus_db","accommodation","root","19940215")
-	this.sendAttachment = function(email,path,timeschedule) {
+	sendAttachment = function(email,path,timeschedule) {
 		console.log("main start");
 		var j = schedule.scheduleJob(timeschedule, function(){
 			console.log("schedule start");
@@ -62,6 +81,12 @@ function DumpAndEmail() {
 					console.log("mailsent" + info);
 				}
 			});
+		});
+	}
+
+	this.sendRoomRecordOfYesterday = function(path, db, user, password, timescheduleExport, timescheduleSend) {
+		scheduleExportRoomRecordOfYersterday(path, db, user, password, timescheduleExport, function(filename) {
+			sendAttachment('e0052753@u.nus.edu', filename, timescheduleSend);
 		});
 	}
 //main("mcshuo@vip.qq.com","c:\\abc\\accommodation.txt")

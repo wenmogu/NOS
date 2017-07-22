@@ -119,6 +119,29 @@ function dbGroupandUser() {
 		})
 	}
 
+	whichMemberSlotEmptypart1 = function(grp, i, emptyarr, resularr, trigger, callback) {//grpid, 1, [], [], false, callback
+		if (trigger == false) {
+			//hvnt loaded to resularr yet
+			connection.query('select * from ?? where GROUPID=?', [Groupinfo.table, grp], function(err, resul) {
+				if (err) throw err;
+				whichMemberSlotEmptypart1(grp, i, emptyarr, resul, true, callback);
+			});
+		} else {
+			if (i > 5) {
+				callback(emptyarr);
+			} else {
+				if (resularr.length == 0 && i == 3) {
+					callback(null);
+				} else if (resularr[0]["NUSNETSID" + i] == "NONE") {
+					emptyarr.push[i];
+					whichMemberSlotEmptypart1(grp, i+1, emptyarr, resularr, true, callback);
+				} else {
+					whichMemberSlotEmptypart1(grp, i + 1, emptyarr, resularr, true, callback);
+				}
+			}
+		}
+	}
+
 	
 	UserGetEmailAddFromDB = function(id, callback) {
 		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [Userinfo.table, id], function(err, results) {
@@ -219,6 +242,17 @@ function dbGroupandUser() {
 			}
 		});
 	}
+
+	this.getGroupLeader = function(grpid, callback) {
+		connection.query('select NUSNETSID1 from ?? where GROUPID=?', [Groupinfo.table, grpid], function(err, resul) {
+			if (err) throw err;
+			// console.log(JSON.stringify(resul));[{"NUSNETSID1":"e0032334"}]
+			connectionUser.query('select * from ?? where NUSNETSID=?', [Userinfo.table, resul[0]["NUSNETSID1"]], function(errr, resull) {
+				if (errr) throw errr;
+				callback(resull[0]["NUSNETSID"], resull[0]["USERNAME"], resull[0]["EMAIL"]);
+			})
+		})
+	}
 /* _______________________________________________________GROUP methods __________________________________________________________*/
 
 
@@ -256,16 +290,34 @@ function dbGroupandUser() {
 		});
 	}
 
+	this.whichMemberSlotEmpty = function(grp, callback) {
+		whichMemberSlotEmptypart1(grp, 1, [], [], false, function(arrOrBoo) {
+			console.log(JSON.stringify(arrOrBoo));
+			if (arrOrBoo == null) {
+				console.log("the group doesnt exist");
+				callback(null);
+			} else {
+				console.log("the group exists");
+				callback(arrOrBoo);
+			}
+		})
+	}
+
 	//precondition: the group name is valid, so can register
 	// the name, id1, id2, id3, id4 and id5 r submitted to the database, where a grp with name and id1 is created
 	// the rest of the ids send email to ask them confirm their group, then update after confirmation. 
-	this.registerGroup = function(name, id1, id2, id3, id4, id5, callback) {
-		connection.query("insert into ?? (GROUPID, NUSNETSID1) values (?, ?)", [Groupinfo.table, name, id1], function(err, results) {
+	this.registerGroup = function(name, id1, callback) {
+		connection.query("insert into ?? (GROUPNAME, NUSNETSID1) values (?, ?)", [Groupinfo.table, name, id1], function(err, results) {
 			if (err) throw err;
 			console.log(results);
-			callback(name, id2, id3, id4, id5);
+			connection.query("select * from ?? where NUSNETSID1=?", [Groupinfo.table, id1], function(err, resul) {
+				if (err) throw err;
+				console.log(resul);
+				callback(name, resul[0].GROUPID);
+			})
 		});
 	}
+
 
 	this.addGroupToUserInfo = function(grpname, id, name, callback) {//related to Group_info
 		connectionUser.query("update ?? set GROUPID=? where NUSNETSID=? and USERNAME=?", [Userinfo.table, grpname, id, name], function(err, resul) {
@@ -274,6 +326,10 @@ function dbGroupandUser() {
 			callback(true);
 		})
 	}
+
+//output to /manageGroup in req.body: 
+//{ usergroupID: '1701', usertoken: 'asdfasdf' }
+
 	//precondition: the owner of the id acknowledge by clicking the link on the email and confirming on the confirmation page
 	//precondition: the group alr exists
 	//precondition: run this together with addGroupToUserInfo to add the groupname into the userinfo table
