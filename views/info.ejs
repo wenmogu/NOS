@@ -62,9 +62,9 @@ DATE: <%= allTimeslots[d][0]["DATEOFTABLE"] %>
   <% for (var u=0; u < allTimeslots[d].length; u++) { %>
     <tr>
       <td> <%= allTimeslots[d][u].ROOMNUMBER %></td>
-      <% if(userBooking[0] == true) { %>
+      <% if(userBooking[d] == true) { %>
         <% for(var i=0;i<7; i++) { %>
-          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] == "none") { %>
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
             <td>
             <button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled> BOOK
             </button></td>
@@ -75,7 +75,7 @@ DATE: <%= allTimeslots[d][0]["DATEOFTABLE"] %>
         <% } %>
       <% } else { %>
         <% for(var i=0;i<7; i++) { %>
-          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] == "none") { %>s
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
             <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden> BOOK
             </button></td>
           <% } else { %>

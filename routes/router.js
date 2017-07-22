@@ -8,7 +8,7 @@ var db_user = new db_use();
 var db_boo = require("../config/db_groupBooking");
 var db_book = new db_boo();
 
-var t = require('./token');
+var t = require('../config/token');
 var db_token = new t();
 
 //套路：
@@ -130,7 +130,7 @@ module.exports = function (app,passport) {
                       {profile:req.user, 
                       allTimeslots: arrAll, 
                       userBooking:arrOfBoo, 
-                      userGroup:grpname, 
+                      userGroup:grpid, 
                       bookedTimeslot:arrBooked}
                 );
               })
@@ -347,11 +347,6 @@ module.exports = function (app,passport) {
   });
 
 
-
-//今天就到这里了，明天接着写吧。。/
-//routes and ejs to do: invite member(5th and others who didnt join the group), dismissGroup
-//new functions of which member is not added, token api are needed. 
-
   //receive data from startAGroup and joinAGroup
   //if it's start group, add userID, grpID, token to a table, send email;
   //if it's join group, check if its in table, if it is, add into the group, delete from the table. 
@@ -373,26 +368,34 @@ module.exports = function (app,passport) {
             	db_user.registerGroup(req.body.groupname, req.user.NusNetsID, function(grpname, grpid) {
             		//pass out grpname and grpid, used in render
             		//now generate token and send email to the rest of them
-            		if (member5ID == "") {
+            		if (req.body.member5ID == "") {
             			//ignore 5th member
             			db_token.createTokenForSomePpl(req.user.displayName, 
-            									   [member2ID, member3ID, member4ID],
-            									   [member2email, member3email, member4email],
+            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID],
+            									   [req.body.member2email, req.body.member3email, req.body.member4email],
             									   grpid,
             									   function(boo) {
             									   	if(boo == true) {
-            									   		res.render()
+            									   		res.render('manageGroup.ejs', 
+            									   				   {profile:req.user, 
+            									   				   	notified:true, 
+            									   				   	mailList:[req.body.member2email, req.body.member3email, req.body.member4email]
+            									   				   });
             									   	}
             									   });
             		} else {
             			//send email also to the 5th member
             			db_token.createTokenForSomePpl(req.user.displayName,
-            									   [member2ID, member3ID, member4ID, member5ID],
-            									   [member2email, member3email, member4email, member5email],
+            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID, req.body.member5ID],
+            									   [req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email],
             									   grpid,
             									   function(boo) {
             									   	if(boo == true) {
-            									   		res.render()
+            									   		res.render('manageGroup.ejs', 
+            									   					{profile:req.user, 
+            									   					notified:true,
+            									   					mailList:[req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email]
+            									   					});
             									   	}
             									   });
             		}
@@ -408,27 +411,29 @@ module.exports = function (app,passport) {
             					//either group is full or this id is alr registered. ask them to check with their fren or contact admin. 
             					//give the email of the member 1 of this grpid
             					db_user.getGroupLeader(grupid, function(leaderid, leadername, leaderemail) {
-            						res.render({contactID: leaderid,
-            									contactName: leadername,
-            									contactEmail: leaderemail});
+            						res.render('manageGroup.ejs', {profile:req.user,
+            													   groupID:gid,
+            													   contactID: leaderid,
+            													   contactName: leadername,
+            													   contactEmail: leaderemail});
             					})
             				} else if (bullin == true) {
             					//registered! add into userinfo, render success. 
             					db_user.addGroupToUserInfo(gid, req.user.NusNetsID, req.user.displayName, function(bub) {
             						console.log(bub);
-            						res.render();
+            						res.render('manageGroup.ejs', {profile:req.user, groupID:gid, groupExist:true, added:true});
             					})
             				} else if (bullin == null) {
             					//group does not exist. probably alr dismissed. 
             					//rener failure
-            					res.render();
+            					res.render('manageGroup.ejs', {profile:req.user, groupID:gid, groupExist:false, added:false});
             				}
             			})
             		} else {
             			//fail token check. render page indicate failure
-            			res.render();
+            			res.render('manageGroup.ejs', {profile:req.user, groupID:gid, tokenFailure:true});
             		}
-            	} )
+            	})
             }
           }
         });
@@ -439,27 +444,108 @@ module.exports = function (app,passport) {
     });  
   });
 
+/*---------BOOKING AND CANCELLING FEATURES---------------------------------------------------------------------------*/
+
+  app.get("/booking", isLoggedIn, function(req,res) {
+  	///booking?room=101&timeslotstart=18&date=Tue%20Jul%2025%202017%2000:00:00%20GMT+0800%20(Malay%20Peninsula%20Standard%20Time)
+  	if (req.url == "/booking") {
+  		res.redirect('/info');
+  	} else {
+  		var roomnumber = req.url.split("&")[0].split('=')[1];
+  		var timeslotstart = req.url.split("&")[1].split('=')[1];
+  		var datestr = req.url.split("&")[2].split('=')[1].split('%20').slice(0,4).join(" ");
+  		var timeslot = timeslotstart + "TO" + (parseInt(timeslotstart) + 2);
+  		console.log(roomnumber);
+  		console.log(timeslotstart);
+  		console.log(datestr);
+  		console.log(timeslot);
+	  	db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
+	      if (boo == true) {
+	        //registered 
+	        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+	          if (bool == true) {
+	            //in a group. check if the group is complete
+	            db_user.IfGroupComplete(grp, function(grpid, bu) {
+	            	if (bu == true) {
+	            		//group is complete
+	            		res.render('bookingForm.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot})
+	            	} else if (bu == false) {
+	            		//group is incomplete
+	            		res.redirect('/manageRegister');
+	            	} else if (bu == null) {
+	            		//group does not exist
+	            		res.redirect('/manageRegister');
+	            	}
+	            })
+	          } else {
+	          	//not in a group
+	            res.redirect('/manageRegister');
+	          }
+	        });
+	      } else {
+	      	//not registered
+	        res.redirect('/register');
+	      }
+	    });
+  	}
+  })
 
 
+//22号就写到这里啦，这里以上的ejs都写过了，下面的都还没有写
+  app.post('/manageBooking', isLoggedIn, function(req,res) {
+  	db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
+      if (boo == true) {
+        //registered 
+        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+          if (bool == true) {
+            //in a group.
+            db_user.IfGroupComplete(grp, function(grpid, bu) {
+	            	if (bu == true) {
+	            		//group is complete
+	            		console.log("headerrrrrrrrrrrrrrrrrrrrrr");
+	            		console.log(req.headers.referer); //http://localhost/booking?room=103&timeslotstart=10&date=Sun%20Jul%2023%202017%2000:00:00%20GMT+0800%20(Malay%20Peninsula%20Standard%20Time)
+	            		var roomnumber = req.headers.referer.split("&")[0].split('=')[1];
+				  		var timeslotstart = req.headers.referer.split("&")[1].split('=')[1];
+				  		var datestr = req.headers.referer.split("&")[2].split('=')[1].split('%20').slice(0,4).join(" ");
+				  		var timeslot = timeslotstart + "TO" + (parseInt(timeslotstart) + 2);
+				  		console.log(roomnumber);
+				  		console.log(timeslotstart);
+				  		console.log(datestr);
+				  		console.log(timeslot);
+				  		db_book.dateFormatFromReq(datestr, function(strWithSpace) {
+	            			db_book.groupBook(grpid, strWithSpace, roomnumber, timeslot, function(bulin) {
+	            				if (bulin == true) {
+	            					//booking made
+	            					res.render('manageBooking.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot});
+	            					//and send emails to everyone in the group
+/*trouble!!!!! solve groupBookNotify at db_groupBooking line 521, problem: obtainAllMemberEmailIter*/
+	            					db_book.groupBookNotify(grpid, roomnumber, timeslot, datestr);
+	            				}
+	            			})
+	            		})
+	            	} else if (bu == false) {
+	            		//group is incomplete
+	            		res.redirect('/manageRegister');
+	            	} else if (bu == null) {
+	            		//group does not exist
+	            		res.redirect('/manageRegister');
+	            	}
+	        })
+          } else {
+          	//not in a group
+            res.redirect('/manageRegister');
+          }
+        });
+      } else {
+      	//not registered
+        res.redirect('/register');
+      }
+    });	
+  })
 
+  //for manage Booking
+				
 
-  app.get("/booking", isLoggedIn, function (req,res) { // dont forget to check again if the intended timeslot is alr booked by someone else; if so, redirect back to info. 
-    console.log("---------------------------------------------------------------");
-    console.log(req.url); //to the booking page, login to book a room
-    console.log("---------------------------------------------------------------");
-    if(req.url == '/booking') {
-      db_manager.emptyRoomNumber(function(result) {
-        res.render("bookingForm.ejs", {profile: req.user, rooms:result});
-      }); 
-    } else {
-      var timeslotstart = req.url.split("=")[2];
-      var roomnumber = req.url.split("=")[1].split("&")[0];
-      console.log("request for " + roomnumber + timeslotstart);
-      db_manager.emptyRoomNumber(function (result) {
-        res.render("bookingForm.ejs", {profile: req.user, rooms: result, bookedRoom: roomnumber, timeslotstart: timeslotstart, timeslotend: parseInt(timeslotstart) + 2});
-      });
-    }
-  });
 
   app.get("/cancelBookingConfirm", isLoggedIn, function (req,res) { //to the booking page, login to book a room
     db_manager.bookedRoomNumber(req.user.displayName, req.user.emails[0].value, function (result) {
@@ -475,24 +561,6 @@ module.exports = function (app,passport) {
     }) 
   });
 
-
-  app.post("/manageBooking", isLoggedIn, function(req,res) {
-    
-      db_manager.book(req.user.displayName,req.user.emails[0].value,req.body.roomnumber,function (result) {
-      // debugging  console.log(req);
-      //console.log(JSON.stringify(req.user));//{"displayName":"","emails":[{"value":""}],"name":{"familyName":"","givenName":""}}
-      console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-      console.log(JSON.stringify(req.body));
-      console.log(JSON.stringify(result));
-      console.log("****************************************");
-      console.log(JSON.stringify(req.user));
-      if(result == false) {
-        res.redirect('/viewBooking');
-      } else {
-        res.render("manageBooking.ejs", {profile: req.user, content: req.body, table:result});
-      }
-    });
-  })
 
 
   // catch 404 and forward to error handler

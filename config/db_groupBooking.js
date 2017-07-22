@@ -6,7 +6,7 @@ var info = {
   database : 'nus_db',
   table    : 'Room_record'
 
-};
+}; 
  
 var infoGroup = {
   host     : 'localhost',
@@ -14,6 +14,15 @@ var infoGroup = {
   password : 'LordMushroom2015',
   database : 'nus_db',
   table    : 'Group_record'
+
+};
+
+var infoUser = {
+  host     : 'localhost',
+  user     : 'root',
+  password : 'LordMushroom2015',
+  database : 'nus_db',
+  table    : 'User_info'
 
 };
 
@@ -35,11 +44,29 @@ var infoGroupInfo = {
 
 };
 
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'jlinswenmogu@gmail.com',
+    pass: 'Fattypiggy123'
+  }
+});
+
+var mailOptions = {
+  from: 'jlinswenmogu@gmail.com',
+  to: "to be updated",
+  subject: "You're invited to join a group!",
+  text: 'TO be updated'
+};
+
 
 var connection = mysql.createConnection(info);
 var connectionGroup = mysql.createConnection(infoGroup);
 var connectionBook = mysql.createConnection(infoBook);
 var connectionGroupInfo = mysql.createConnection(infoGroupInfo);
+var connectionUser = mysql.createConnection(infoUser);
 
 
 function db(){
@@ -218,7 +245,9 @@ function db(){
 		console.log("result: " + result);
 		callback(result);
 	}
-	all5Days = function(callback) {//output: [ '19 7 2017', '20 7 2017', '21 7 2017', '22 7 2017', '23 7 2017' ]
+
+	//output: [ '19 7 2017', '20 7 2017', '21 7 2017', '22 7 2017', '23 7 2017' ]
+	all5Days = function(callback) {
 		var d0 = new Date();
 		var d1 = new Date();
 		var d2 = new Date();
@@ -441,7 +470,19 @@ function db(){
 
 
  /*----group book and group booking state API-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+ 	this.dateFormatFromReq = function(str, callback) {//str: Tue Jul 10 2017; output: dd mm year //exact same function as dateFormat
+		var d = new Date();
+		var time = Date.parse(str);
+		d.setTime(time);
+		var arr = d.toLocaleDateString().split('/');
+		var ar = [];
+		ar[0] = arr[1];
+		ar[1] = arr[0];
+		ar[2] = arr[2];
+		var result = ar.toString().replace(/,/g, " ");
+		console.log("result: " + result);
+		callback(result);
+	}
 
  	//precondition: room and timeslot all exist
 	//              the group is complete//including if it exists
@@ -475,6 +516,38 @@ function db(){
 			}
 		});
 	}
+
+	
+    obtainAllMemberEmailIter = function(grpid, i, emailarr, callback) {//grpid, 1, [], callback
+    	connectionGroupInfo.query("select * from ?? where GROUPID=?", [infoGroupInfo.table, grpid], function(err, resul) {
+    		if (err) throw err;
+    		if (i > 5) {
+    			console.log(emailarr);
+    			callback(emailarr);
+    		} else {
+	    		if (resul["NUSNETSID"+i] != "none" || resul["NUSNETSID"+i] != null) {
+		    		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [infoUser.table, resul["NUSNETSID"+i]], function(errr, resull) {
+		    			emailarr.push(resull["EMAIL"]);
+		    			obtainAllMemberEmailIter(grpid, i + 1, emailarr, callback);
+		    		})	
+	    		}
+    		}	
+    	});
+    }
+
+    this.groupBookNotify = function(grpid, room, timeslot, date) {
+		obtainAllMemberEmailIter(grpid, 1, [], function(email) {
+			mailOptions.text = "your group has sent booked a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
+		    for (var i = 0; i < email.length; i++) {
+			    mailOptions.to = email[i];
+			    console.log(mailOptions);
+			    transporter.sendMail(mailOptions, function(err, info) {
+			        if (err) console.error(err);
+			        console.log("mailsent" + info);
+			    });		
+		    }   
+		})    
+    }
 
 	this.groupCancel = function(name, date, room, timeslot, callback) {
 		isTimeslotEmpty(date, timeslot, room, function(boo) {

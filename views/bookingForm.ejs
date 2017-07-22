@@ -4,28 +4,15 @@
 
 </head>
 <body>
+{profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot}
 <form action="/manageBooking" method="POST">
     <fieldset>
         <label>Booking Form </label> <br/>
         User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
-        Email: <input type="text" name='useremail' value="<%=profile.emails[0].value%>" disabled> <br/>
-		Room Number: <select name="roomnumber">
-
-		  <%for (var i= 0; i < rooms.length; i++) { %>  
-            <% if (bookedRoom == undefined) {%>
-                <option id="select<%=i %>"> <%=rooms[i].RoomNumber%> </option>
-            <% }  else {%>
-                <% if (rooms[i].RoomNumber == bookedRoom) {%>
-		  	       <option id="select<%=i %>" selected> <%=rooms[i].RoomNumber%> </option>
-                <% } else { %>
-                <option id="selected<%=i %>" hidden> <%=rooms[i].RoomNumber%> </option>
-                <% } %>
-            <% } %>
-		  <%} %>
-        </select> <br/>
-        Time Slot: <select name='timeslot'> 
-        <option><%=timeslotstart%> - <%=timeslotend%></option>
-		</select> <br/>
+        Group ID: <input type="text" name='groupID' value="<%=groupID%>" disabled> <br/>
+		Room Number: <input type="text" name='roomnumber' value="<%=roomnumber%>" disabled> <br/>
+        Date: <input type="text" name='date' value="<%=date%>" disabled> <br/>
+        Time Slot: <input type="text" name='timeslot' value="<%=timeslot%>" disabled> <br/>
 
 <!--         <script type='text/javasript'>
              var index = window.location.search.indexOf("=");
