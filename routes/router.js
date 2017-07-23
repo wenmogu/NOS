@@ -40,11 +40,11 @@ isLoggedIn = function (req,res,next) {
         return next();
       } else {
         console.log(name + " is not from RVRC! redirected to login page");
-        res.redirect('/login');
+        res.redirect('/');
       }
     });
   } else {
-    res.redirect('/login');
+    res.redirect('/');
   }
 }
 
@@ -52,9 +52,7 @@ module.exports = function (app,passport) {
   app.get('/',function (req,res) {
   	res.render('index.ejs',{ title : "nus test index page"});
   });  
-  app.get('/login',function (req,res) {
-  	res.render('login.ejs',{ message : req.flash("LOGIN") });
-  });
+
   app.get('/logout', function (req,res) {
   	req.logout();
   	res.redirect('/');
@@ -64,7 +62,7 @@ module.exports = function (app,passport) {
 
   app.get('/auth/openid/return',passport.authenticate('openid', 
       { successRedirect: '/viewBooking',
-        failureRedirect: '/login' }));
+        failureRedirect: '/' }));
 
   // routes 
 
@@ -364,41 +362,47 @@ module.exports = function (app,passport) {
             //res...
             if (req.body.usergroupID == undefined) {
             	//data come from startAGroup
-            	//add the req.user into group_info, generate a GroupID, and give her the groupID.
+            	//add the req.user into group_info, add groupId to userinfo, generate a GroupID, and give her the groupID.
             	db_user.registerGroup(req.body.groupname, req.user.NusNetsID, function(grpname, grpid) {
             		//pass out grpname and grpid, used in render
             		//now generate token and send email to the rest of them
-            		if (req.body.member5ID == "") {
-            			//ignore 5th member
-            			db_token.createTokenForSomePpl(req.user.displayName, 
-            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID],
-            									   [req.body.member2email, req.body.member3email, req.body.member4email],
-            									   grpid,
-            									   function(boo) {
-            									   	if(boo == true) {
-            									   		res.render('manageGroup.ejs', 
-            									   				   {profile:req.user, 
-            									   				   	notified:true, 
-            									   				   	mailList:[req.body.member2email, req.body.member3email, req.body.member4email]
-            									   				   });
-            									   	}
-            									   });
-            		} else {
-            			//send email also to the 5th member
-            			db_token.createTokenForSomePpl(req.user.displayName,
-            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID, req.body.member5ID],
-            									   [req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email],
-            									   grpid,
-            									   function(boo) {
-            									   	if(boo == true) {
-            									   		res.render('manageGroup.ejs', 
-            									   					{profile:req.user, 
-            									   					notified:true,
-            									   					mailList:[req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email]
-            									   					});
-            									   	}
-            									   });
-            		}
+            		db_user.addGroupToUserInfo(grpid, req.user.NusNetsID, req.user.displayName, function(trueOrFalse) {
+            			if (trueOrFalse == true) {
+            				//continue to create token.
+		            		if (req.body.member5ID == "") {
+		            			//ignore 5th member
+		            			db_token.createTokenForSomePpl(req.user.displayName, 
+		            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID],
+		            									   [req.body.member2email, req.body.member3email, req.body.member4email],
+		            									   grpid,
+		            									   function(boo) {
+		            									   	if(boo == true) {
+		            									   		res.render('manageGroup.ejs', 
+		            									   				   {profile:req.user, 
+		            									   				   	notified:true, 
+		            									   				   	mailList:[req.body.member2email, req.body.member3email, req.body.member4email]
+		            									   				   });
+		            									   	}
+		            									   });
+		            		} else {
+		            			//send email also to the 5th member
+		            			db_token.createTokenForSomePpl(req.user.displayName,
+		            									   [req.body.member2ID, req.body.member3ID, req.body.member4ID, req.body.member5ID],
+		            									   [req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email],
+		            									   grpid,
+		            									   function(boo) {
+		            									   	if(boo == true) {
+		            									   		res.render('manageGroup.ejs', 
+		            									   					{profile:req.user, 
+		            									   					notified:true,
+		            									   					mailList:[req.body.member2email, req.body.member3email, req.body.member4email, req.body.member5email]
+		            									   					});
+		            									   	}
+		            									   });
+		            		}
+            			}
+            		})
+            		
             	});
             } else {
             	//data come from joinAGroup
@@ -568,6 +572,13 @@ module.exports = function (app,passport) {
   		// console.log(timeslotstart);
   		// console.log(datestr);
   		// console.log(timeslot);
+
+// headddddddddddddddddddddddddddder
+// http://localhost/viewBooking
+// req.urlllllllllllllllllllllllllllllll
+// /cancelBooking?room=101&timeslotstart=16:00:00&date=2017-7-27
+
+
 	  	db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
 	      if (boo == true) {
 	        //registered 
