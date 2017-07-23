@@ -9,7 +9,7 @@
 	<link rel="stylesheet" href="/stylesheets/theme1/custom.min.css">
 </head>
 <body>
-<%= JSON.stringify(schedule) %>
+	<%= JSON.stringify(schedule) %>
 	<style>  
 		.col-center-block {  
 			float: none;  
@@ -58,14 +58,14 @@
 						<% if (schedule[d].length == 1) { %>
 						<p>No booking slot</p>
 						<% } else { %>
-							<% for (var i=1; i < schedule[d].length; i++) { %>
-							<p>GROUP ID: <%=schedule[d][i].GROUPID%></p>
-							<p>ROOMNUMBER: <%=schedule[d][i].ROOMNUMBER%></p>
-							<p>TIMESLOT STARTS AT: <%=schedule[d][i].SLOTSTART%></p>
-							<p>TIMESLOT ENDS AT: <%=schedule[d][i].SLOTEND%></p>
-							<p>DECISION TIME: <%=schedule[d][i].DECISIONTIME%></p>
-							<button onclick="location.href='/cancelBooking?room=<%=schedule[d][i].ROOMNUMBER%>&timeslotstart=<%=schedule[d][i].SLOTSTART%>&date=<%=schedule[d][0]%>'"> Cancel Booking</button>
-							<% } %>
+						<% for (var i=1; i < schedule[d].length; i++) { %>
+						<p>GROUP ID: <%=schedule[d][i].GROUPID%></p>
+						<p>ROOMNUMBER: <%=schedule[d][i].ROOMNUMBER%></p>
+						<p>TIMESLOT STARTS AT: <%=schedule[d][i].SLOTSTART%></p>
+						<p>TIMESLOT ENDS AT: <%=schedule[d][i].SLOTEND%></p>
+						<p>DECISION TIME: <%=schedule[d][i].DECISIONTIME%></p>
+						<button onclick="location.href='/cancelBooking?room=<%=schedule[d][i].ROOMNUMBER%>&timeslotstart=<%=schedule[d][i].SLOTSTART%>&date=<%=schedule[d][0]%>'"> Cancel Booking</button>
+						<% } %>
 						<% } %>
 					</div>
 
@@ -74,8 +74,10 @@
 			</div>
 		</div>
 		<button onclick="location.href='/info'">view general info</button>
-
 		<% include footer.ejs %>
 	</div>
+	<script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>
+	<script src="/stylesheets/theme1/bootstrap.min.js"></script>
+	<script src="/stylesheets/theme1/custom.js"></script>
 </body>
 </html>
