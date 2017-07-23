@@ -1,21 +1,98 @@
 <!DOCTYPE html>
-<html>
-    <head>
-
-    </head>
-    <body>
-    {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: weekstr, timeslot:timeslot}
-        <form action="/manageCancel" method="POST">
-            <fieldset>
-                <label>Cancel Booking Form </label> <br/>
-                User: <input type="text" name='username' value='<%=profile.displayName%>' disabled> <br/>
-                Group ID: <input type="text" name='groupID' value="<%=groupID%>" disabled> <br/>
-                Room Number: <input type="text" name='roomnumber' value="<%=roomnumber%>" disabled> <br/>
-                Date: <input type="text" name='date' value="<%=date%>" disabled> <br/>
-                Time Slot: <input type="text" name='timeslot' value="<%=timeslot%>" disabled> <br/>      
-                Reason: <input type="text" name="reason"/><br/>
-                <input type="submit" value="submit"/>
-            </fieldset>
-        </form>
-    </body>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello, <%= profile.displayName %></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="/stylesheets/theme1/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="/stylesheets/theme1/custom.min.css">
+</head>
+<body>
+	<style>  
+		.col-center-block {  
+			float: none;  
+			display: block;  
+			margin-left: auto;  
+			margin-right: auto;  
+		}  
+	</style>  
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/">RVRC BOOKING</a>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div id="navbar-main" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a>Hi, <%= profile.displayName %></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-7 col-center-block">
+				<div class="jumbotron">
+					<form class="form-horizontal" action="/manageCancel", method="POST">
+						<fieldset>
+							<legend>Cancel Booking Form</legend>
+							<div class="form-group">
+								<label class="col-lg-2 control-label" for="username">User</label>
+								<div class="col-lg-10">
+									<input id="username" name='username' class="form-control" value='<%=profile.displayName%>' type="text" disabled>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-lg-2 control-label" for="groupID">Group ID</label>
+								<div class="col-lg-10">
+									<input id="groupID" name='groupID' class="form-control" value='<%=groupID%>' type="text" disabled>
+								</div>
+							</div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label" for="roomnumber">Room Number</label>
+                                <div class="col-lg-10">
+                                    <input id="roomnumber" name='roomnumber' class="form-control" value='<%=roomnumber%>' type="text" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label" for="date">Date</label>
+                                <div class="col-lg-10">
+                                    <input id="date" name='date' class="form-control" value='<%=date%>' type="text" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label" for="timeslot">Time Slot</label>
+                                <div class="col-lg-10">
+                                    <input id="timeslot" name='timeslot' class="form-control" value='<%=timeslot%>' type="text" disabled>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label" for="reason">Reason</label>
+                                <div class="col-lg-10">
+                                    <input id="reason" name='reason' class="form-control" type="text">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                 <button class="btn btn-primary" type="submit">Submit</button>
+                             </div>
+                         </div>
+                     </fieldset>
+                 </form>
+             </div>	
+         </div>
+     </div>
+     <% include footer.ejs %>
+ </div>
+ <script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>
+ <script src="/stylesheets/theme1/bootstrap.min.js"></script>
+ <script src="/stylesheets/theme1/custom.js"></script>
+</body>
 </html>
