@@ -57,7 +57,7 @@ var transporter = nodemailer.createTransport({
 var mailOptions = {
   from: 'jlinswenmogu@gmail.com',
   to: "to be updated",
-  subject: "You're invited to join a group!",
+  subject: "Your group has booked a room!",
   text: 'TO be updated'
 };
 
@@ -243,6 +243,16 @@ function db(){
 		ar[2] = arr[2];
 		var result = ar.toString().replace(/,/g, " ");
 		console.log("result: " + result);
+		callback(result);
+	}
+
+	dateFormatFromHyphen = function(str, callback) {//str: 2017-7-27; output: dd mm year
+		var arr = str.split("-");
+		var ar = [];
+		ar[0] = arr[2];
+		ar[1] = arr[1];
+		ar[2] = arr[0];
+		var result = ar.join(" ");
 		callback(result);
 	}
 
@@ -468,6 +478,27 @@ function db(){
 		}
 	}
 
+	obtainAllMemberEmailIter = function(grpid, i, emptyarr, groupArr, callback) {
+    	//1701, 1, [], [], callback
+    	if (i == 1 && groupArr.length == 0) {
+    		connectionGroupInfo.query("select * from ?? where GROUPID=?", [infoGroupInfo.table, grpid], function(err, resul) {
+    			obtainAllMemberEmailIter(grpid, i, emptyarr, resul, callback);
+    		})
+    	} else if (i >= 5) {
+    		callback(emptyarr);
+    	} else if ( 1 < i < 5 && groupArr.length != 0) {
+    		if (groupArr[0]["NUSNETSID"+i] != "none" || groupArr[0]["NUSNETSID"+i] != null) {
+    			connectionUser.query('select EMAIL from ?? where ??=?', [infoUser.table, "NUSNETSID", groupArr[0]["NUSNETSID"+i]], function(errr, resull) {
+    				emptyarr.push(resull[0]["EMAIL"]);
+    				obtainAllMemberEmailIter(grpid, i + 1, emptyarr, groupArr, callback);
+    			})
+    		} else {
+    			obtainAllMemberEmailIter(grpid, i + 1, emptyarr, groupArr, callback);
+    		}
+    	}
+    }
+
+
 
  /*----group book and group booking state API-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
  	this.dateFormatFromReq = function(str, callback) {//str: Tue Jul 10 2017; output: dd mm year //exact same function as dateFormat
@@ -517,33 +548,16 @@ function db(){
 		});
 	}
 
-	
-    obtainAllMemberEmailIter = function(grpid, i, emailarr, callback) {//grpid, 1, [], callback
-    	connectionGroupInfo.query("select * from ?? where GROUPID=?", [infoGroupInfo.table, grpid], function(err, resul) {
-    		if (err) throw err;
-    		if (i > 5) {
-    			console.log(emailarr);
-    			callback(emailarr);
-    		} else {
-	    		if (resul["NUSNETSID"+i] != "none" || resul["NUSNETSID"+i] != null) {
-		    		connectionUser.query("select EMAIL from ?? where NUSNETSID=?", [infoUser.table, resul["NUSNETSID"+i]], function(errr, resull) {
-		    			emailarr.push(resull["EMAIL"]);
-		    			obtainAllMemberEmailIter(grpid, i + 1, emailarr, callback);
-		    		})	
-	    		}
-    		}	
-    	});
-    }
-
-    this.groupBookNotify = function(grpid, room, timeslot, date) {
-		obtainAllMemberEmailIter(grpid, 1, [], function(email) {
-			mailOptions.text = "your group has sent booked a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
+    
+    this.groupBookNotify = function(name, grpid, room, timeslot, date) {
+		obtainAllMemberEmailIter(grpid, 1, [], [], function(email) {
+			mailOptions.text = name + " has helped " + "your group has booked a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
 		    for (var i = 0; i < email.length; i++) {
 			    mailOptions.to = email[i];
 			    console.log(mailOptions);
 			    transporter.sendMail(mailOptions, function(err, info) {
 			        if (err) console.error(err);
-			        console.log("mailsent" + info);
+			        console.log("mailsent" + JSON.stringify(info));
 			    });		
 		    }   
 		})    

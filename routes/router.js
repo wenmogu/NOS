@@ -491,7 +491,6 @@ module.exports = function (app,passport) {
   })
 
 
-//22号就写到这里啦，这里以上的ejs都写过了，下面的都还没有写
   app.post('/manageBooking', isLoggedIn, function(req,res) {
   	db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
@@ -516,10 +515,14 @@ module.exports = function (app,passport) {
 	            			db_book.groupBook(grpid, strWithSpace, roomnumber, timeslot, function(bulin) {
 	            				if (bulin == true) {
 	            					//booking made
-	            					res.render('manageBooking.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot});
+	            					var d = new Date();
+	            					res.render('manageBooking.ejs', {success:true, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString()});
 	            					//and send emails to everyone in the group
 /*trouble!!!!! solve groupBookNotify at db_groupBooking line 521, problem: obtainAllMemberEmailIter*/
-	            					db_book.groupBookNotify(grpid, roomnumber, timeslot, datestr);
+	            					db_book.groupBookNotify(req.user.displayName, grpid, roomnumber, timeslot, datestr);
+	            				} else if (bulin == false) {
+	            					//room occupied
+	            					res.render('manageBooking.ejs', {success:false, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString()})
 	            				}
 	            			})
 	            		})
@@ -547,19 +550,67 @@ module.exports = function (app,passport) {
 				
 
 
-  app.get("/cancelBookingConfirm", isLoggedIn, function (req,res) { //to the booking page, login to book a room
+  
+
+  app.get("/cancelBooking", isLoggedIn, function(req, res) {
+  	if (req.url == "/cancelBooking") {
+  		res.redirect('/info');
+  	} else {
+  		console.log("headddddddddddddddddddddddddddder");
+  		console.log(req.headers.referer);
+  		console.log('req.urlllllllllllllllllllllllllllllll');
+  		console.log(req.url);
+  		// var roomnumber = req.url.split("&")[0].split('=')[1];
+  		// var timeslotstart = req.url.split("&")[1].split('=')[1];
+  		// var datestr = req.url.split("&")[2].split('=')[1].split('%20').slice(0,4).join(" ");
+  		// var timeslot = timeslotstart + "TO" + (parseInt(timeslotstart) + 2);
+  		// console.log(roomnumber);
+  		// console.log(timeslotstart);
+  		// console.log(datestr);
+  		// console.log(timeslot);
+	  	db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
+	      if (boo == true) {
+	        //registered 
+	        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+	          if (bool == true) {
+	            //in a group. check if the group is complete
+	            db_user.IfGroupComplete(grp, function(grpid, bu) {
+	            	if (bu == true) {
+	            		//group is complete
+	            		//res.render('bookingForm.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot})
+	            	} else if (bu == false) {
+	            		//group is incomplete
+	            		res.redirect('/manageRegister');
+	            	} else if (bu == null) {
+	            		//group does not exist
+	            		res.redirect('/manageRegister');
+	            	}
+	            })
+	          } else {
+	          	//not in a group
+	            res.redirect('/manageRegister');
+	          }
+	        });
+	      } else {
+	      	//not registered
+	        res.redirect('/register');
+	      }
+	    });
+  	}
+  })
+
+
+  app.post("/manageCancel", isLoggedIn, function (req,res) { //to the booking page, login to book a room
     db_manager.bookedRoomNumber(req.user.displayName, req.user.emails[0].value, function (result) {
       res.render("cancelBookingConfirm.ejs", {profile: req.user, rooms:result});
     })
   });
-
-
-  app.post("/cancelBooking", isLoggedIn, function (req,res) { //to the booking page, login to book a room
-    db_manager.cancel(req.user.displayName, req.user.emails[0].value, req.body.roomnumber, function (result) { //cancel?
-      //res.render("cancelBookingConfirm.ejs", {profile: req.user, rooms: result});
-      res.redirect("/viewBooking");
-    }) 
-  });
+  // app.post("/cancelBooking", isLoggedIn, function (req,res) { //to the booking page, login to book a room
+  //   db_manager.cancel(req.user.displayName, req.user.emails[0].value, req.body.roomnumber, function (result) { //cancel?
+  //     //res.render("cancelBookingConfirm.ejs", {profile: req.user, rooms: result});
+  //     res.redirect("/viewBooking");
+  //   }) 
+  // });
 
 
 

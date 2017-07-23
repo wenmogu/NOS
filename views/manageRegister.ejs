@@ -1,92 +1,113 @@
 <!DOCTYPE html>
-<html>
-  <head>
-
-    <title>Hello, <%= profile.displayName %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-
-  </head>
-  <body>
-
-  <% if (groupID == false) { %>
-    <h4>You are currently groupless</h4>
-  <% } else { %>
-    <h4>You are currently in Group <%=groupID%> </h4>
-  <% } %>
-  
-    <div>
-      <button onclick="b()">Logout</button>
-      <script>
-        function b(){
-            window.location.href='/logout';
-        }
-      </script>
-    </div>
-
-    <div>
-      <% if (inviteButton == false) { %>
-        <button onclick="a()" disabled>view booking info</button>
-      <% } else { %>
-        <button onclick="a()">view booking info</button>
-      <% } %>
-      <script>
-        function a(){
-            window.location.href='/viewBooking';
-        }
-      </script>
-    </div>
-
-
-    <div>
-      <% if (StartButton == false) { %>
-        <button onclick="c()" disabled>Start a Group</button>
-      <% } else { %>
-        <button onclick="c()">Start a Group</button>
-      <% } %>
-      <script>
-        function c(){
-            window.location.href='/startAGroup';
-        }
-      </script>
-    </div>
-
-    <div>
-      <% if (JoinButton == false) { %>
-        <button onclick="d()" disabled>Join a Group</button>
-      <% } else { %>
-        <button onclick="d()">Join a Group</button>
-      <% } %>
-      <script>
-        function d(){
-            window.location.href='/joinAGroup';
-        }
-      </script>
-    </div>
-
-    <div>
-      <% if (inviteButton == false) { %>
-        <button onclick="e()" disabled>Invite Members</button>
-      <% } else { %>
-        <button onclick="e()">Invite Members</button>
-      <% } %>
-      <script>
-        function e(){
-            window.location.href='/inviteMembers';
-        }
-      </script>
-    </div>
-
-    <div>
-      <% if (dismissButton == false) { %>
-        <button onclick="f()" disabled>Dismiss Your Group</button>
-      <% } else { %>
-        <button onclick="f()">Dismiss Your Group</button>
-      <% } %>
-      <script>
-        function f(){
-            window.location.href='/dismissAGroup';
-        }
-      </script>
-    </div>
-  </body>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello, <%= profile.displayName %></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="/stylesheets/theme1/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="/stylesheets/theme1/custom.min.css">
+</head>
+<body>
+	<style>  
+		.col-center-block {  
+			float: none;  
+			display: block;  
+			margin-left: auto;  
+			margin-right: auto;  
+		}  
+	</style>  
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/">RVRC BOOKING</a>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div id="navbar-main" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a>Hi, <%= profile.displayName %></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+		<% if (groupID == false) { %>
+				<h1>You are currently groupless</h1>
+		<% } else { %>
+				<h1>You are currently in Group <%=groupID%></h1>
+		<% } %>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-lg-7">
+			<p>
+				<a class="btn btn-warning" href="/logout">Logout</a>
+			</p>
+			<% if (inviteButton == true) { %>
+			<p>
+				<a class="btn btn-default" href="/viewBooking">View booking info</a>
+			</p>
+			<% } %>
+			<% if (StartButton == true) { %>
+			<p>
+				<a class="btn btn-primary" href="/startAGroup">Start a Group</a>
+			</p>
+			<% } %>
+			<% if (JoinButton == true) { %>
+			<p>
+				<a class="btn btn-success" href="/joinAGroup">Join a Group</a>
+			</p>
+			<% } %>
+			<% if (inviteButton == true) { %>
+			<p>
+				<a class="btn btn-info" href="/inviteMembers">Invite Members</a>
+			</p>
+			<% } %>
+			<% if (dismissButton == true) { %>
+			<p>
+				<a class="btn btn-danger" href="/dismissAGroup">Dismiss Your Group</a>
+			</p>
+			<% } %>
+			</div>
+		</div>
+		<footer>
+			<div class="row">
+				<div class="col-lg-12">
+					<ul class="list-unstyled">
+						<li class="pull-right">
+							<a href="#top">Back to top</a>
+						</li>
+						<li>
+							<a href="http://rvrc.nus.edu.sg">RVRC</a>
+						</li>
+						<li>
+							<a href="http://feeds.feedburner.com/bootswatch">Contact Us</a>
+						</li>
+					</ul>
+					<p>
+						Theme made by
+						<a href="http://thomaspark.co" rel="nofollow">Thomas Park</a>
+						.
+					</p>
+					<p>
+						Code released under the
+						<a href="https://github.com/thomaspark/bootswatch/blob/gh-pages/LICENSE">MIT License</a>
+						.
+					</p>
+				</div>
+			</div>	
+		</footer>
+	</div>
+	<script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>
+	<script src="/stylesheets/theme1/bootstrap.min.js"></script>
+	<script src="/stylesheets/theme1/custom.js"></script>
+</body>
 </html>

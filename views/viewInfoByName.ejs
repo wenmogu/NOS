@@ -9,7 +9,7 @@
     <button onclick="cb()">cancel booking</button>
     <script>
       function cb(){
-          window.location.href='/cancelBookingConfirm';
+          window.location.href='/cancelBooking';
       }
     </script>
   </div>
@@ -36,11 +36,19 @@
           <p> No Booking Slot </p>
         <% } else { %>
           <% for (var i=1; i < schedule[d].length; i++) { %>
+            <div>
             <p><%=schedule[d][i].GROUPID%></p>
             <p><%=schedule[d][i].ROOMNUMBER%></p>
             <p><%=schedule[d][i].SLOTSTART%></p>
             <p><%=schedule[d][i].SLOTEND%></p>
             <p><%=schedule[d][i].DECISIONTIME%></p>
+            <button onclick="cd()">cancel booking</button>
+            <script>
+            function cd(){
+                window.location.href='/cancelBooking?room=<%= schedule[d][i].ROOMNUMBER %>&timeslotstart=<%= schedule[d][i].SLOTSTART %>&date=<%= schedule[d][0]%>';
+            }
+            </script>
+            <div> <br/> <br/>
           <% } %>
         <% } %>
         

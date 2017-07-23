@@ -16,8 +16,8 @@ var token = new t();
 // })
 // dumpEmail.scheduleExportRoomRecordOfYersterday("C:\\ABC", "nus_db", "root", "LordMushroom2015", "25 15 * * *");
 // dumpEmail.sendAttachment('e0052753@u.nus.edu', "c:\\ABC\\group_info.txt",'3 15 * * *');
-
-user.getGroupLeader('1701', function(id, name, email){console.log(id + " " + name + " " + email);});
+groupBooking.groupBookNotify(1701, "101", "8TO10", "Sun Jul 23 2017");
+//user.getGroupLeader('1701', function(id, name, email){console.log(id + " " + name + " " + email);});
 // user.IfGroupAlrExist("1701", function(name, boo, result) {
 //   console.log(boo);
 //   console.log(result);

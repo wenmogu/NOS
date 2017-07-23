@@ -5,17 +5,20 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-  <p>Congratulation! You hv grabbed ur room. </p>
+  {sucess:boolean, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot,decisionTime:d.toString()}
+  <% if (sucess == true) { %>
+    <h4>Congratulation! You hv grabbed ur room. </h4>
+  <% } else { %>
+    <h4>Sorry your booking of this room failed! Please try another room.</h4>
+  <% } %>
+  
   <p>Booking info: </p>
   <p>Name: <%= profile.displayName %></p>
-  <p>Email: <%= profile.emails[0].value %></p>
-  <p>Room Number: <%= content.roomnumber %></p>
-  <p>Status:  <% if(table[0].Status != 0) { %>
-        <p id="Status" style="color:red"> You've booked this room</p>
-     <% } else { %>
-        <p id="Status" style="color:green"> Available for booking</p>
-     <% } %></p>
-  <p>Time Booked: <%= table[0].TimeModified %></p>
+  <p>Group ID: <%= groupID %></p>
+  <p>Room Number: <%= roomnumber %></p>
+  <p>Date: <%= date %></p>
+  <p>Timeslot: <%= timeslot %></p>
+  <p>Decision Time: <%= decisionTime %></p>
 
 
     <button onclick="tz()">logout</button>
@@ -29,10 +32,10 @@
     <button onclick="cd()">cancel booking</button>
     <script>
     function cd(){
-        window.location.href='/cancelBookingConfirm';
-
+        window.location.href='/cancelBooking?room=<%= roomnumber %>&timeslot=<%= timeslot %>&date=<%= date%>';
     }
     </script>
+
 
     <button onclick="v()">view booking info</button>
     <script>
