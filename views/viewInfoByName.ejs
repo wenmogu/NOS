@@ -1,80 +1,81 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello,<%= profile.displayName %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-  <div>
-    <button onclick="cb()">cancel booking</button>
-    <script>
-      function cb(){
-          window.location.href='/cancelBooking';
-      }
-    </script>
-  </div>
-{profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp}
-//[{"GROUPNAME":"moguempireee","ROOMNUMBER":"101","SLOTSTART":"10:00:00","SLOTEND":"12:00:00","DECISIONTIME":"2017-07-13T17:11:50.000Z"}]
-<br/>
-{profile:req.user,
-                                groupID:grpid,
-                               schedule:schedule}
-<br/>
-<%=profile%><br/>
-<%=groupID%><br/>
-<%=schedule%><br/>
-  <div>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello, <%= profile.displayName %></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="/stylesheets/theme1/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="/stylesheets/theme1/custom.min.css">
+</head>
+<body>
+<%= JSON.stringify(schedule) %>
+	<style>  
+		.col-center-block {  
+			float: none;  
+			display: block;  
+			margin-left: auto;  
+			margin-right: auto;  
+		}  
+	</style>  
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/">RVRC BOOKING</a>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div id="navbar-main" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a>Hi, <%= profile.displayName %></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="page-header">
+				<h1>Your Group ID: <%= groupID %></h1>
+				<h1>Welcome to viewBooking page, <%= profile.displayName %></h1>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-lg-7">
+				<p>
+					<a class="btn btn-warning" href="/logout">Logout</a>
+				</p>
+				<% for (var d=0; d < 5; d++) { %>
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h3 class="panel-title">DATE:<%=schedule[d][0]%></h3>	
+					</div>
+					<div class="panel-body">
+						<% if (schedule[d].length == 1) { %>
+						<p>No booking slot</p>
+						<% } else { %>
+							<% for (var i=1; i < schedule[d].length; i++) { %>
+							<p>GROUP ID: <%=schedule[d][i].GROUPID%></p>
+							<p>ROOMNUMBER: <%=schedule[d][i].ROOMNUMBER%></p>
+							<p>TIMESLOT STARTS AT: <%=schedule[d][i].SLOTSTART%></p>
+							<p>TIMESLOT ENDS AT: <%=schedule[d][i].SLOTEND%></p>
+							<p>DECISION TIME: <%=schedule[d][i].DECISIONTIME%></p>
+							<button onclick="location.href='/cancelBooking?room=<%=schedule[d][i].ROOMNUMBER%>&timeslotstart=<%=schedule[d][i].SLOTSTART%>&date=<%=schedule[d][0]%>'"> Cancel Booking</button>
+							<% } %>
+						<% } %>
+					</div>
 
-    <h1><%= groupID %></h1>
-    <p>Welcome to viewBooking page, <%= profile.displayName %></p>
+				</div>
+				<% } %>
+			</div>
+		</div>
+		<button onclick="location.href='/info'">view general info</button>
 
-
-    <% for (var d=0; d < 5; d++) { %>
-      <div>
-        <p>DATE:<%=schedule[d][0]%> </p>
-        <% if (schedule[d].length == 1) { %>
-          <p> No Booking Slot </p>
-        <% } else { %>
-          <% for (var i=1; i < schedule[d].length; i++) { %>
-            <div>
-            <p><%=schedule[d][i].GROUPID%></p>
-            <p><%=schedule[d][i].ROOMNUMBER%></p>
-            <p><%=schedule[d][i].SLOTSTART%></p>
-            <p><%=schedule[d][i].SLOTEND%></p>
-            <p><%=schedule[d][i].DECISIONTIME%></p>
-            <button onclick="cd()">cancel booking</button>
-            <script>
-            function cd(){
-                window.location.href='/cancelBooking?room=<%= schedule[d][i].ROOMNUMBER %>&timeslotstart=<%= schedule[d][i].SLOTSTART %>&date=<%= schedule[d][0]%>';
-            }
-            </script>
-            <div> <br/> <br/>
-          <% } %>
-        <% } %>
-        
-      </div>
-    <% } %>
-
-    </div>
-
-    <div>
-
-    <button onclick="tz()">logout</button>
-    <script>
-    function tz(){
-        window.location.href='/logout';
-
-    }
-    </script>
-
-    <button onclick="z()">Book a slot at info page</button>
-    <script>
-    function z(){
-        window.location.href='/info';
-    }
-    </script>
-
-    </div>
-
-  </body>
+		<% include footer.ejs %>
+	</div>
+</body>
 </html>

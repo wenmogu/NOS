@@ -253,6 +253,22 @@ function dbGroupandUser() {
 			})
 		})
 	}
+/*--------------------------------------------for MAINTAINANCE----------------------------------------*/
+
+//if the user changed her email halfway, gotta update the system. 
+	this.updateUserEmail = function(reqName, reqID, reqEmail, callback) {
+		connectionUser.query('select * from ?? where USERNAME=? AND NUSNETSID=?', [Userinfo.table, reqName, reqID], function(err, resul) {
+			if (err) console.error(err);
+			if (resul[0]["EMAIL"] == reqEmail) {
+				callback(true);
+			} else {
+				connectionUser.query('update ?? set EMAIL=? where NUSNETSID=?', [Userinfo.table, reqEmail, reqID], function(errr, resull) {
+					if (errr) console.error(errr);
+					callback(true);
+				})
+			}
+		})
+	}
 /* _______________________________________________________GROUP methods __________________________________________________________*/
 
 
@@ -303,9 +319,11 @@ function dbGroupandUser() {
 		})
 	}
 
+	//precondition: the user id not in any group
 	//precondition: the group name is valid, so can register
-	// the name, id1, id2, id3, id4 and id5 r submitted to the database, where a grp with name and id1 is created
-	// the rest of the ids send email to ask them confirm their group, then update after confirmation. 
+	//post condition: add the group to user info also
+		// the name, id1, id2, id3, id4 and id5 r submitted to the database, where a grp with name and id1 is created
+		// the rest of the ids send email to ask them confirm their group, then update after confirmation. 
 	this.registerGroup = function(name, id1, callback) {
 		connection.query("insert into ?? (GROUPNAME, NUSNETSID1) values (?, ?)", [Groupinfo.table, name, id1], function(err, results) {
 			if (err) throw err;

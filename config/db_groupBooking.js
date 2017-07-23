@@ -57,7 +57,7 @@ var transporter = nodemailer.createTransport({
 var mailOptions = {
   from: 'jlinswenmogu@gmail.com',
   to: "to be updated",
-  subject: "Your group has booked a room!",
+  subject: "To be updated",
   text: 'TO be updated'
 };
 
@@ -183,8 +183,8 @@ function db(){
 	groupCancelPart1 = function(name, date, room, timeslot, callback) { 
 //insert into Group_record (GROUPNAME, DECISION, DATE, ROOMNUMBER, SLOTSTART, SLOTEND) values ("moguempireee", "BOOK", "101", '2017-3-23', 100000', '120000');
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("insert into ?? (GROUPID,, DATE, ROOMNUMBER, SLOTSTART, SLOTEND, CANCEL_DECISION, CANCEL_DECISIONTIME) values (?, ?, ?, ?, ?, 'CANCEL', NOW())", 
-								  [infoGroup.table, name, str, room, timeslot.split("TO")[0]+"0000", timeslot.split("TO")[1]+"0000"],
+			connectionGroup.query("update ?? set CANCEL_DECISION=?, CANCEL_DECISIONTIME=NOW() where GROUPID=? AND DATE=?", 
+								  [infoGroup.table, "CANCEL", name, str],
 								  function(err, resul) {
 								  	if (err) throw err;
 								  	console.log("%%%%%% " + JSON.stringify(resul));
@@ -246,15 +246,6 @@ function db(){
 		callback(result);
 	}
 
-	dateFormatFromHyphen = function(str, callback) {//str: 2017-7-27; output: dd mm year
-		var arr = str.split("-");
-		var ar = [];
-		ar[0] = arr[2];
-		ar[1] = arr[1];
-		ar[2] = arr[0];
-		var result = ar.join(" ");
-		callback(result);
-	}
 
 	//output: [ '19 7 2017', '20 7 2017', '21 7 2017', '22 7 2017', '23 7 2017' ]
 	all5Days = function(callback) {
@@ -488,11 +479,13 @@ function db(){
     		callback(emptyarr);
     	} else if ( 1 < i < 5 && groupArr.length != 0) {
     		if (groupArr[0]["NUSNETSID"+i] != "none" || groupArr[0]["NUSNETSID"+i] != null) {
+    			console.log(groupArr[0]["NUSNETSID"+i]);
     			connectionUser.query('select EMAIL from ?? where ??=?', [infoUser.table, "NUSNETSID", groupArr[0]["NUSNETSID"+i]], function(errr, resull) {
     				emptyarr.push(resull[0]["EMAIL"]);
     				obtainAllMemberEmailIter(grpid, i + 1, emptyarr, groupArr, callback);
     			})
     		} else {
+    			console.log("lalalal" + groupArr[0]["NUSNETSID"+i]);
     			obtainAllMemberEmailIter(grpid, i + 1, emptyarr, groupArr, callback);
     		}
     	}
@@ -501,6 +494,16 @@ function db(){
 
 
  /*----group book and group booking state API-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+ 	this.dateFormatFromHyphen = function(str, callback) {//str: 2017-7-27; output: dd mm year
+		var arr = str.split("-");
+		var ar = [];
+		ar[0] = arr[2];
+		ar[1] = arr[1];
+		ar[2] = arr[0];
+		var result = ar.join(" ");
+		callback(result);
+	}
+
  	this.dateFormatFromReq = function(str, callback) {//str: Tue Jul 10 2017; output: dd mm year //exact same function as dateFormat
 		var d = new Date();
 		var time = Date.parse(str);
@@ -551,7 +554,23 @@ function db(){
     
     this.groupBookNotify = function(name, grpid, room, timeslot, date) {
 		obtainAllMemberEmailIter(grpid, 1, [], [], function(email) {
-			mailOptions.text = name + " has helped " + "your group has booked a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
+			mailOptions.subject = "Your group has booked a room!";
+			mailOptions.text = name + " has helped " + "your group book a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
+		    for (var i = 0; i < email.length; i++) {
+			    mailOptions.to = email[i];
+			    console.log(mailOptions);
+			    transporter.sendMail(mailOptions, function(err, info) {
+			        if (err) console.error(err);
+			        console.log("mailsent" + JSON.stringify(info));
+			    });		
+		    }   
+		})    
+    }
+
+    this.groupCancelNotify = function(name, grpid, room, timeslot, date) {
+		obtainAllMemberEmailIter(grpid, 1, [], [], function(email) {
+			mailOptions.subject = "Your group has cancelled a booking!";
+			mailOptions.text = name + " has helped " + "your group cancel a room booking. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
 		    for (var i = 0; i < email.length; i++) {
 			    mailOptions.to = email[i];
 			    console.log(mailOptions);

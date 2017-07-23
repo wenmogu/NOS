@@ -11,12 +11,16 @@ var dumpEmail = new de();
 
 var t = require('./token');
 var token = new t();
+
+user.updateUserEmail("DUMMYa", "a", 'e0052753@u.nus.edu', function(boo) {
+	console.log(boo);
+})
 // token.createTokenForSomePpl(['e0052753', 'e0032334'], ['mcshuo@vip.qq.com', 'krisd3v@gmail.com'], 1234, function(boo) {
 // 	console.log("sent");
 // })
 // dumpEmail.scheduleExportRoomRecordOfYersterday("C:\\ABC", "nus_db", "root", "LordMushroom2015", "25 15 * * *");
 // dumpEmail.sendAttachment('e0052753@u.nus.edu', "c:\\ABC\\group_info.txt",'3 15 * * *');
-groupBooking.groupBookNotify(1701, "101", "8TO10", "Sun Jul 23 2017");
+// groupBooking.groupBookNotify("Xia Runze", 1711, "101", "16TO18", "Sun Jul 23 2017");
 //user.getGroupLeader('1701', function(id, name, email){console.log(id + " " + name + " " + email);});
 // user.IfGroupAlrExist("1701", function(name, boo, result) {
 //   console.log(boo);
