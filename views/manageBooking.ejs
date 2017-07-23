@@ -1,62 +1,80 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <% if (success == true) { %>
-      <title> Successful Booking </title>
-    <% } else { %>
-      <title> Booking Failure </title>
-    <% } %>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  
-  <body>
-  {sucess:boolean, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot,decisionTime:d.toString()}
-  <% if (success == true) { %>
-    <h4>Congratulation! You hv grabbed ur room. </h4>
-  <% } else { %>
-    <h4>Sorry your booking of this room failed! Please try another room.</h4>
-  <% } %>
-  
-  <p>Booking info: </p>
-  <p>Name: <%= profile.displayName %></p>
-  <p>Group ID: <%= groupID %></p>
-  <p>Room Number: <%= roomnumber %></p>
-  <p>Date: <%= date %></p>
-  <p>Timeslot: <%= timeslot %></p>
-  <p>Decision Time: <%= decisionTime %></p>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<% if (success == true) { %>
+	<title> Successful Booking </title>
+	<% } else { %>
+	<title> Booking Failure </title>
+	<% } %>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="/stylesheets/theme1/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="/stylesheets/theme1/custom.min.css">
+</head>
+<body>
+	<style>  
+		.col-center-block {  
+			float: none;  
+			display: block;  
+			margin-left: auto;  
+			margin-right: auto;  
+		}  
+	</style>  
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/">RVRC BOOKING</a>
+				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+			</div>
+			<div id="navbar-main" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a>Hi, <%= profile.displayName %></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="page-header">
+				<% if (success == true) { %>
+				<h4>Congratulation! You hv grabbed ur room. </h4>
+				<% } else { %>
+				<h4>Sorry your booking of this room failed! Please try another room.</h4>
+				<% } %>
 
-
-    <button onclick="tz()">logout</button>
-    <script>
-    function tz(){
-        window.location.href='/logout';
-
-    }
-    </script>
-
-    <button onclick="cd()">cancel booking</button>
-    <script>
-    function cd(){
-        window.location.href='/cancelBooking?room=<%= roomnumber %>&timeslotstart=<%= timeslotstart %>&date=<%= date%>';
-    }
-    </script>
-
-
-    <button onclick="v()">view booking info</button>
-    <script>
-    function v(){
-        window.location.href='/viewBooking';
-
-    }
-    </script>
-
-    <button onclick="z()">view general info</button>
-    <script>
-    function z(){
-        window.location.href='/info';
-
-    }
-    </script>
-    
-  </body>
+				<p>Booking info: </p>
+				<p>Name: <%= profile.displayName %></p>
+				<p>Group ID: <%= groupID %></p>
+				<p>Room Number: <%= roomnumber %></p>
+				<p>Date: <%= date %></p>
+				<p>Timeslot: <%= timeslot %></p>
+				<p>Decision Time: <%= decisionTime %></p>
+			</div>
+		</div>	
+		<div class="row">
+			<div class="col-lg-7">
+				<p>
+					<a class="btn btn-warning" href="/logout">Logout</a>
+				</p>
+				<p>
+					<a class="btn btn-info" href="/viewBooking">View My Booking Info</a>
+				</p>
+				<p>
+					<a class="btn btn-success" href="/info">View General Info</a>
+				</p>				
+			</div>
+		</div>
+		<% include footer.ejs %>
+	</div>
+	<script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>
+	<script src="/stylesheets/theme1/bootstrap.min.js"></script>
+	<script src="/stylesheets/theme1/custom.js"></script>
+</body>
 </html>

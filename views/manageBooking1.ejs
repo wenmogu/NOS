@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% if (success == true) { %>
+      <title> Successful Booking </title>
+    <% } else { %>
+      <title> Booking Failure </title>
+    <% } %>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  
+  <body>
+  {sucess:boolean, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot,decisionTime:d.toString()}
+  <% if (success == true) { %>
+    <h4>Congratulation! You hv grabbed ur room. </h4>
+  <% } else { %>
+    <h4>Sorry your booking of this room failed! Please try another room.</h4>
+  <% } %>
+  
+  <p>Booking info: </p>
+  <p>Name: <%= profile.displayName %></p>
+  <p>Group ID: <%= groupID %></p>
+  <p>Room Number: <%= roomnumber %></p>
+  <p>Date: <%= date %></p>
+  <p>Timeslot: <%= timeslot %></p>
+  <p>Decision Time: <%= decisionTime %></p>
+
+
+    <button onclick="tz()">logout</button>
+    <script>
+    function tz(){
+        window.location.href='/logout';
+
+    }
+    </script>
+
+    <button onclick="cd()">cancel booking</button>
+    <script>
+    function cd(){
+        window.location.href='/cancelBooking?room=<%= roomnumber %>&timeslotstart=<%= timeslotstart %>&date=<%= date%>';
+    }
+    </script>
+
+
+    <button onclick="v()">view booking info</button>
+    <script>
+    function v(){
+        window.location.href='/viewBooking';
+
+    }
+    </script>
+
+    <button onclick="z()">view general info</button>
+    <script>
+    function z(){
+        window.location.href='/info';
+
+    }
+    </script>
+    
+  </body>
+</html>

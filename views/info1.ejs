@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>Hello, <%= profile.displayName %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+  </head>
+
+  <body>
+    <h2>Welcome to Booking Info page, </h2>
+    <h3 id="displayName" > <%=profile.displayName %> </h3>
+    <div>
+      <button onclick="cb()">View My Booking Info</button>
+      <script>
+        function cb(){
+            window.location.href='/viewBooking';
+        }
+      </script>
+    </div>
+    <div>
+      <button onclick="b()">Logout</button>
+      <script>
+        function b(){
+            window.location.href='/logout';
+        }
+      </script>
+    </div>
+
+    <div>
+    <% if (profile.displayName == "Guest") { %>
+    <% include login.ejs %>
+    <% } else{%>
+    <% ; %>
+    <% } %>
+    </div>
+    <br/> <br/>
+<!-- {profile:req.user, table:result, userBooking:true, userGroup:grpname, bookedTimeslot:resultt}
+<br/>
+{profile:req.user, 
+                      allTimeslots: arrAll, 
+                      userBooking:arrOfBoo, 
+                      userGroup:grpname, 
+                      bookedTimeslot:arrBooked}
+<br/> -->
+
+<% for (var d = 0; d<allTimeslots.length; d++) { %>
+  
+
+DATE: <%= allTimeslots[d][0]["DATEOFTABLE"] %>
+ <table>
+  <tr>
+    <th>Room Number</th>
+    <th>8-10</th> 
+    <th>10-12</th>
+    <th>12-14</th>
+    <th>14-16</th>
+    <th>16-18</th>
+    <th>18-20</th>
+    <th>20-22</th>
+  </tr>
+  <% for (var u=0; u < allTimeslots[d].length; u++) { %>
+    <tr>
+      <td> <%= allTimeslots[d][u].ROOMNUMBER %></td>
+      <% if(userBooking[d] == true) { %>
+        <% for(var i=0;i<7; i++) { %>
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
+            <td>
+            <button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled> BOOK
+            </button></td>
+          <% } else { %>
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" disabled> BOOK
+            </button></td>
+          <% } %>
+        <% } %>
+      <% } else { %>
+        <% for(var i=0;i<7; i++) { %>
+          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden> BOOK
+            </button></td>
+          <% } else { %>
+            <td><button onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'"> BOOK
+            </button></td>
+          <% } %>
+        <% } %>
+      <% } %>
+      
+    </tr>
+  <% } %>
+  
+</table>
+<br/><br/>
+<% } %>
+  </body>
+</html>
+ 

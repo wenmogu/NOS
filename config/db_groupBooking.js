@@ -2,7 +2,7 @@ var mysql = require("mysql");
 var info = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'Room_record'
 
@@ -11,7 +11,7 @@ var info = {
 var infoGroup = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'Group_record'
 
@@ -20,7 +20,7 @@ var infoGroup = {
 var infoUser = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'User_info'
 
@@ -29,7 +29,7 @@ var infoUser = {
 var infoBook = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'Book_state'
 
@@ -38,7 +38,7 @@ var infoBook = {
 var infoGroupInfo = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'Group_info'
 

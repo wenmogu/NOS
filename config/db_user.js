@@ -5,7 +5,7 @@ var mysql = require("mysql");
 var Groupinfo = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'Group_info'
 };
@@ -13,7 +13,7 @@ var Groupinfo = {
 var Userinfo = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'User_info'
 }
@@ -21,7 +21,7 @@ var Userinfo = {
 var RVRCuser = {
   host     : 'localhost',
   user     : 'root',
-  password : 'LordMushroom2015',
+  password : '19940215',
   database : 'nus_db',
   table    : 'RVRC_User'
 }
