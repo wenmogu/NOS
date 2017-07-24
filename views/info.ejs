@@ -56,7 +56,9 @@
     </div>
     <div>
       <% if (profile.displayName == "Guest") { %>
-      <% include login.ejs %>
+        <p>
+          <a class="btn btn-warning" href="/login">Login</a>
+        </p>
       <% } else{%>
       <% ; %>
       <% } %>
@@ -80,34 +82,33 @@
         <tr>
           <td> <%= allTimeslots[d][u].ROOMNUMBER %></td>
           <% if(userBooking[d] == true) { %>
-          <% for(var i=0;i<7; i++) { %>
-          <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
-          <td>
-            <button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled> BOOK
-            </button></td>
-            <% } else { %>
-            <td><button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" disabled> BOOK
-            </button></td>
-            <% } %>
-            <% } %>
-            <% } else { %>
             <% for(var i=0;i<7; i++) { %>
-            <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
-            <td><button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden> BOOK
-            </button></td>
-            <% } else { %>
-            <td><button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'"> BOOK
-            </button></td>
+              <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
+              <td>
+                <!-- <button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled color=red > BOOKED
+                </button> --></td>
+              <% } else { %>
+                <td><button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" disabled> BOOK
+                </button></td>
+              <% } %>
             <% } %>
+          <% } else { %>
+            <% for(var i=0;i<7; i++) { %>
+              <% if(allTimeslots[d][u][(i*2+8) + "TO" + (i*2+10)] != "NONE") { %>
+              <td><!-- <button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'" hidden disabled color=red> BOOKED
+              </button> --></td>
+              <% } else { %>
+              <td><button class="btn btn-success" onclick="location.href='/booking?room=<%= allTimeslots[d][u].ROOMNUMBER %>&timeslotstart=<%= i*2+8 %>&date=<%=allTimeslots[d][0].DATEOFTABLE %>'"> BOOK
+              </button></td>
+              <% } %>
             <% } %>
-            <% } %>
-
-          </tr>
           <% } %>
+          </tr>
+        <% } %>
         </table>
       </div>
-      <% } %>
     </div>
+    <% } %>
     <% include footer.ejs %>
   </div>
   <script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>

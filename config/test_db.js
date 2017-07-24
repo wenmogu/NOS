@@ -12,9 +12,9 @@ var dumpEmail = new de();
 var t = require('./token');
 var token = new t();
 
-user.updateUserEmail("DUMMYa", "a", 'e0052753@u.nus.edu', function(boo) {
-	console.log(boo);
-})
+// user.updateUserEmail("DUMMYa", "a", 'e0052753@u.nus.edu', function(boo) {
+// 	console.log(boo);
+// })
 // token.createTokenForSomePpl(['e0052753', 'e0032334'], ['mcshuo@vip.qq.com', 'krisd3v@gmail.com'], 1234, function(boo) {
 // 	console.log("sent");
 // })
@@ -188,25 +188,56 @@ var tableRenewal = new ct();
 
 
 
-// const nodemailer = require ('nodemailer');
-// var mailTransport=nodemailer.createTransport({
-//     service:'Gmail',
-//     auth: {
-//         user : 'jlinswenmogu@gmail.com',
-//         pass : 'Fattypiggy123',
-//     }
-// });
+const nodemailer = require ('nodemailer');
 
-// mailTransport.sendMail({
-//   from: ' "whoisthats" <kris@krisd3v.com>',
-//         to : "mcshuo@vip.qq.com",   //user@gmail.com
-//         subject : 'Hello',
-//         text: "Hello How do u do ?",
-//     },function(err,info){
-//       if(err){
-//         console.log('Unable to send the mail :'+err.message);
-//       }
-//       else{
-//         console.log('Message response : '+info.response);
-//       }
-//     });
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'jlinswenmogu@gmail.com',
+    pass: 'Fattypiggy123'
+  }
+});
+
+var mailOptions = {
+  from: 'jlinswenmogu@gmail.com',
+  to: "e0032334@u.nus.edu",
+  subject: "punishment for ignoring me",
+  text: '!!!'
+};
+
+function toWai(heart, i) {
+	if (i >= 20) {
+		callback(true);
+	} else {
+		mailOptions.subject = "emmmmm happy dota";
+		mailOptions.text = heart + "❤"
+		setTimeout(function() {
+			transporter.sendMail(mailOptions, function(err, info) {
+				if (err) {
+					console.log(err);
+					callback(false);
+				} else {
+					console.log("mailsent: " + info);
+					toWai(heart + "❤", i + 1);
+				}
+			});
+		}, 3000);
+	}
+}
+
+toWai("", 1);
+
+// this.groupBookNotify = function(name, grpid, room, timeslot, date) {
+// 		obtainAllMemberEmailIter(grpid, 1, [], [], function(email) {
+// 			mailOptions.subject = "Your group has booked a room!";
+// 			mailOptions.text = name + " has helped " + "your group book a room. Details: groupID: " + grpid +"; room: " + room + "; timeslot: " + timeslot + "; date: " + date;
+// 		    for (var i = 0; i < email.length; i++) {
+// 			    mailOptions.to = email[i];
+// 			    console.log(mailOptions);
+// 			    transporter.sendMail(mailOptions, function(err, info) {
+// 			        if (err) console.error(err);
+// 			        console.log("mailsent" + JSON.stringify(info));
+// 			    });		
+// 		    }   
+// 		})    
+//     }

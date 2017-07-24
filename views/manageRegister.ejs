@@ -40,7 +40,9 @@
 		<div class="row">
 			<div class="page-header">
 		<% if (groupID == false) { %>
-				<h1>You are currently groupless</h1>
+				<h1>You are currently groupless</h1> 
+		<% } else if (inviteButton = true) { %>
+			<h1> Your Group <%=groupID%> is not full, ask more to join! </h1>
 		<% } else { %>
 				<h1>You are currently in Group <%=groupID%></h1>
 		<% } %>

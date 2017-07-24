@@ -5,7 +5,7 @@ var mysql = require("mysql");
 var Groupinfo = {
   host     : 'localhost',
   user     : 'root',
-  password : '19940215',
+  password : 'LordMushroom2015',
   database : 'nus_db',
   table    : 'Group_info'
 };
@@ -13,7 +13,7 @@ var Groupinfo = {
 var Userinfo = {
   host     : 'localhost',
   user     : 'root',
-  password : '19940215',
+  password : 'LordMushroom2015',
   database : 'nus_db',
   table    : 'User_info'
 }
@@ -21,7 +21,7 @@ var Userinfo = {
 var RVRCuser = {
   host     : 'localhost',
   user     : 'root',
-  password : '19940215',
+  password : 'LordMushroom2015',
   database : 'nus_db',
   table    : 'RVRC_User'
 }
@@ -32,7 +32,7 @@ var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: 'jlinswenmogu@gmail.com',
-    pass: '*'
+    pass: '&'
   }
 });
 

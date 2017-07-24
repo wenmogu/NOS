@@ -5,7 +5,7 @@ var mysql = require("mysql");
 var info = {
   host     : 'localhost',
   user     : 'root',
-  password : '19940215',
+  password : 'LordMushroom2015',
   database : 'nus_db',
   table    : 'accommodation'
 
