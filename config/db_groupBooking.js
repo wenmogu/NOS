@@ -99,19 +99,19 @@ function db(){
 	}
 
 
-	hasGroupBookedRoom = function(name, date, room, callback) {//"moguempire", "101", "dd mm year"
+	hasGroupBookedRoom = function(name, date, room, timeslot, callback) {//"moguempire", "101", "dd mm year"
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("select * from ?? where GROUPID=? AND ROOMNUMBER=? AND DATE=?", [infoGroup.table, name, room, str], function(err, results) {
+			connectionGroup.query("select * from ?? where GROUPID=? AND DATE=? AND ROOMNUMBER=?", [infoBook.table, name, str,room], function(err, results) {
 				console.log(JSON.stringify(results));
 				if (err) throw err;
 				if(results.length == 0){
-					console.log("this group did not book this room");
+					console.log("this group did not book this room or has alr cancelled");
 					callback(false);
-				} else if (results[0]["CANCEL_DECISION"] == null) {
+				} else if (results.length == 1) {
 					console.log("this group has booked the room " + room + " on " + date);
 					callback(true);
-				} else if (results[0]["CANCEL_DECISION"] == "CANCEL") {
-					console.log("this group has cancelled their previous booking on " + date + " . Can make another booking.");
+				} else {
+					console.log("multiple bookings on " + date + "????????");
 					callback(false);
 				} 
 			});	
@@ -120,17 +120,17 @@ function db(){
 
 	hasGroupBooked = function(name, date, callback) {//"moguempire", "101", "dd mm year"
 		processDateWithHyphen(date, function(str) {
-			connectionGroup.query("select * from ?? where GROUPID=? AND DATE=?", [infoGroup.table, name, str], function(err, results) {
+			connectionGroup.query("select * from ?? where GROUPID=? AND DATE=?", [infoBook.table, name, str], function(err, results) {
 				console.log(JSON.stringify(results));
 				if (err) throw err;
 				if(results.length == 0){
 					console.log("this group hasnt made any bookings on " + date);
 					callback(false);
-				} else if (results[0]["CANCEL_DECISION"] == null) {
+				} else if (results.length == 1) {
 					console.log("this group has alr booked on " + date);
 					callback(true);
-				} else if (results[0]["CANCEL_DECISION"] == "CANCEL") {
-					console.log("this group has cancelled their previous booking. Can make another booking.");
+				} else {
+					console.log("multiple booking???");
 					callback(false);
 				} 
 			});	
@@ -586,7 +586,7 @@ function db(){
 		isTimeslotEmpty(date, timeslot, room, function(boo) {
 			if(boo == false) {
 				console.log("yes the room is occupied, is this room occupied by this group?");
-				hasGroupBookedRoom(name, date, room, function(booo) {
+				hasGroupBookedRoom(name, date, room, timeslot, function(booo) {
 					if(booo == false) {
 						console.log("yo this group didnt book this room");
 						callback(false);
