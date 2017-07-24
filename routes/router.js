@@ -66,35 +66,6 @@ module.exports = function (app,passport) {
 
   // routes 
 
-  // app.get("/info", function(req, res) {
-  //   db_book.bookedTimeslot(function(resultt) { //resultt is an array of [roomnumber~8, roomnumber~18, ...]
-  //     console.log("array: " + resultt);
-  //     db_book.allTimeslot(function(result) {
-  //       console.log("i m at .info. at allTimeslot.");
-  //       if (JSON.stringify(req.user) == undefined) {
-  //         res.render('info.ejs', {profile:{displayName:"Guest"}, table:result, userBooking:false, userGroup:null, bookedTimeslot:resultt}); //userBooking is false means User doesnt book anything
-  //       } else {
-  //         console.log("the user is logged in. Now printing more detailed table to him.");
-  //         db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grpname, boo) {
-  //           console.log(JSON.stringify(result));
-  //           if(boo == false) {
-  //             res.render('info.ejs', {profile:req.user, table:result, userBooking:false, userGroup:null, bookedTimeslot:resultt});
-  //           } else if(boo == true) {
-  //             db_book.hasGroupBookedAny(grpname, function(bool) {
-  //               console.log("groupname: " + grpname);
-  //               if(bool == false) {
-  //                 res.render('info.ejs', {profile:req.user, table:result, userBooking:false, userGroup:grpname, bookedTimeslot:resultt});
-  //               } else if(bool == true) {
-  //                 res.render('info.ejs', {profile:req.user, table:result, userBooking:true, userGroup:grpname, bookedTimeslot:resultt});
-  //               }
-  //             });
-  //           }
-  //         });
-  //       }
-  //     });
-  //   });
-  // });
-
   app.get('/info', function(req, res) {
     db_book.allBookedTimeslotsFor5Days(function(arrBooked) {
       db_book.allTimeslotsFor5Days(function(arrAll) {
@@ -138,37 +109,6 @@ module.exports = function (app,passport) {
       })
     })
   })
-
-  
-  // app.get("/viewBooking", isLoggedIn, function(req, res) {
-  //   db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(nname, iid, eemail, bboo) {
-  //     if (bboo == true) {
-  //       //registered. check if in a group
-  //       db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(id, grp, boo) {
-  //         if (boo == false) {
-  //           console.log("i m at viewBooking routing/getUserGroup. This guy does not have a group.");
-  //           res.redirect("/manageRegister");
-  //         } else if (boo == true) {
-  //           console.log("i m at viewBooking routing/getUserGroup. This guy is in a group.");
-  //           console.log("printing the booking info by this guy's group");
-  //           db_book.groupBookingState(grp, function(resul, boo) { //resul is the booking schedule for today and the next 5 days.
-  //             if (boo == false) {
-  //               console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group did not make any booking. ");
-  //               res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking:false, table:[], groupName:grp});
-  //             } else if (boo == true) {
-  //               console.log("i m at viewBooking routing/getUserGroup/groupBookingState. This guy's group has made a booking. ");
-  //               res.render('viewInfoByName.ejs', {profile:req.user, groupHasMadeBooking: true, table:resul, groupName:grp});
-  //             }
-  //           });
-  //         }
-  //       });
-  //     } else {
-  //       //havnt registed. register first.
-  //       res.redirect('/register');
-  //     }
-  //   })
-
-  // });
 
   app.get('/viewBooking', isLoggedIn, function(req, res) {
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
@@ -552,13 +492,7 @@ module.exports = function (app,passport) {
       }
     });	
   })
-
-  //for manage Booking
 				
-
-
-  
-
   app.get("/cancelBooking", isLoggedIn, function(req, res) {
   	if (req.url == "/cancelBooking") {
   		res.redirect('/info');
@@ -594,7 +528,6 @@ module.exports = function (app,passport) {
 			            db_user.IfGroupComplete(grp, function(grpid, bu) {
 			            	if (bu == true) {
 			            		//group is complete
-/*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/
 			            		res.render('cancelBookingForm.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: spacestr, timeslot:timeslot})
 			            	} else if (bu == false) {
 			            		//group is incomplete
@@ -628,7 +561,6 @@ module.exports = function (app,passport) {
 			            db_user.IfGroupComplete(grp, function(grpid, bu) {
 			            	if (bu == true) {
 			            		//group is complete
-/*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*/
 			            		res.render('cancelBookingForm.ejs', {profile:req.user, groupID:grpid, roomnumber:roomnumber, date: weekstr, timeslot:timeslot})
 			            	} else if (bu == false) {
 			            		//group is incomplete
