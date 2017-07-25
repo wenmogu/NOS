@@ -293,6 +293,8 @@ module.exports = function (app,passport) {
   //if it's join group, check if its in table, if it is, add into the group, delete from the table. 
   app.post('/manageGroup', isLoggedIn, function(req, res) {
           //check if this guy is registered first then if is in a grp 
+          console.log("@#$@$@#$@#$@#$@#$@#$@#$@#$@#$@#$@#$@$@#$");
+          console.log(req);
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
         //registered 
@@ -350,35 +352,37 @@ module.exports = function (app,passport) {
             } else {
             	//data come from joinAGroup
             	//authenticate first
-            	db_token.checkIfTokenMatch(usergroupID, req.user.NusNetsID, usertoken, function(grupid, netsid, token, boolin) {
+            	db_token.checkIfTokenMatch(req.body.usergroupID, req.user.NusNetsID, req.body.usertoken, function(grupid, netsid, token, boolin) {
             		if (boolin == true) {
             			//pass token check. add to groupinfo and userinfo
-            			db_user.registerID(grupid, netsid, function(gid, nid, bullin) {
+            			db_user.registerID(grupid, netsid, function(gid, nid, bullin) { 
             				if (bullin == false) {
             					//either group is full or this id is alr registered. ask them to check with their fren or contact admin. 
             					//give the email of the member 1 of this grpid
             					db_user.getGroupLeader(grupid, function(leaderid, leadername, leaderemail) {
             						res.render('manageGroup.ejs', {profile:req.user,
+                                         success:null,
             													   groupID:gid,
             													   contactID: leaderid,
             													   contactName: leadername,
-            													   contactEmail: leaderemail});
+            													   contactEmail: leaderemail,
+                                         mailList: undefined});
             					})
             				} else if (bullin == true) {
             					//registered! add into userinfo, render success. 
             					db_user.addGroupToUserInfo(gid, req.user.NusNetsID, req.user.displayName, function(bub) {
             						console.log(bub);
-            						res.render('manageGroup.ejs', {profile:req.user, groupID:gid, groupExist:true, added:true});
+            						res.render('manageGroup.ejs', {profile:req.user, success:true, groupID:gid, groupExist:true, added:true, mailList: undefined});
             					})
             				} else if (bullin == null) {
             					//group does not exist. probably alr dismissed. 
             					//rener failure
-            					res.render('manageGroup.ejs', {profile:req.user, groupID:gid, groupExist:false, added:false});
+            					res.render('manageGroup.ejs', {profile:req.user, success:false, groupID:gid, groupExist:false, added:false, mailList: undefined});
             				}
             			})
             		} else {
             			//fail token check. render page indicate failure
-            			res.render('manageGroup.ejs', {profile:req.user, groupID:gid, tokenFailure:true});
+            			res.render('manageGroup.ejs', {profile:req.user, success:false, groupID:gid, tokenFailure:true});
             		}
             	})
             }

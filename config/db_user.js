@@ -235,7 +235,7 @@ function dbGroupandUser() {
 				callback(false, null, false);
 			} else if(resul[0].GROUPID == null) {
 				console.log("this guy hasnt gotten a group yet!");
-				callback(id, null, false);
+				callback(id, null, false); 
 			} else {
 				console.log("ok this guy is in a group");
 				callback(id, resul[0].GROUPID, true);

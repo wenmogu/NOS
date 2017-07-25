@@ -1,0 +1,12 @@
+var tableRenewal = require('../config/tableRenewal');
+var scheduler = new tableRenewal();
+scheduler.createTableSchedule('32 14 * * *', function(boo){
+	var d = new Date();
+  console.log(d.toString());
+  console.log("table created? "+ boo);
+});
+scheduler.dropTableSchedule('32 14 * * *', function(boo){
+  var d = new Date();
+  console.log(d.toString());
+  console.log("table dropped? "+ boo);
+});

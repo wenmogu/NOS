@@ -36,31 +36,52 @@
 			</div>
 		</div>
 	</div>
+
 	<div class="container">
+	<% if(mailList != undefined) { %>
 		<div class="row">
 			<div class="page-header">
 					<p>Your invitation letters have already been sent to: </p>
-	<p><%=mailList[0]%></p>
-	<p><%=mailList[1]%></p>
-	<p><%=mailList[2]%></p>
-	<% if (mailList[3] != undefined) { %>
-		<p><%=mailList[3]%></p>
-	<% } %>
-	<p>Please remember to remind your friends and ask them to join your group via /joinAGroup page after they log in.</p>
-	<p>And please remember to check on your groupings often. Maybe you want to invite others to join your group if they decline. But please do make thoughtful decisions:)</p>
+					<p><%=mailList[0]%></p>
+					<p><%=mailList[1]%></p>
+					<p><%=mailList[2]%></p>
+					<% if (mailList[3] != undefined) { %>
+						<p><%=mailList[3]%></p>
+					<% } %>
+					<p>Please remember to remind your friends and ask them to join your group via /joinAGroup page after they log in.</p>
+					<p>And please remember to check on your groupings often. Maybe you want to invite others to join your group if they decline. But please do make thoughtful decisions:)</p>
 			</div>
 		</div>	
-		<div class="row">
-			<div class="col-lg-7">
-				<p>
-					<a class="btn btn-warning" href="/logout">Logout</a>
-				</p>
-				<p>
-					<a class="btn btn-info" href="/viewBooking">View My Booking Info</a>
-				</p>			
-			</div>
+	<% } else { %>
+		<% if (success == null) { %>
+			render leader contact
+			<p>It's either...the group is full...or...your id is already registered somewhere else...</p>
+			<p>Details:</p>
+			<p>GROUP ID: <%= groupID %></p>
+			<p>Name of The Person You Can Contact: <%= contactName %></p>
+			<p>His/Her Email: <%= contactEmail %></p>
+		<% } else if (success == false) { %>
+			render failure
+			<p>Failure To Join the Group <%= groupID %>, as the group does not exist (probably dismissed)</p>
+		<% } else if (success == true) { %>
+			render success
+			<p>You have successfully joined group <%= groupID %>! </p>
+		<% } %>
+					
+	<% } %>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-7">
+			<p>
+				<a class="btn btn-warning" href="/logout">Logout</a>
+			</p>
+			<p>
+				<a class="btn btn-info" href="/viewBooking">View My Booking Info</a>
+			</p>			
 		</div>
-		<% include footer.ejs %>
+	</div>
+	<% include footer.ejs %>
 	</div>
 	<script src="/stylesheets/theme1/jquery-1.10.2.min.js"></script>
 	<script src="/stylesheets/theme1/bootstrap.min.js"></script>
