@@ -120,6 +120,7 @@ function dbGroupandUser() {
 	}
 
 	whichMemberSlotEmptypart1 = function(grp, i, emptyarr, resularr, trigger, callback) {//grpid, 1, [], [], false, callback
+		console.log("emptyarr: " + emptyarr);
 		if (trigger == false) {
 			//hvnt loaded to resularr yet
 			connection.query('select * from ?? where GROUPID=?', [Groupinfo.table, grp], function(err, resul) {
@@ -132,10 +133,13 @@ function dbGroupandUser() {
 			} else {
 				if (resularr.length == 0 && i == 3) {
 					callback(null);
-				} else if (resularr[0]["NUSNETSID" + i] == "NONE") {
-					emptyarr.push[i];
-					whichMemberSlotEmptypart1(grp, i+1, emptyarr, resularr, true, callback);
+				} else if (resularr[0]["NUSNETSID" + i] == "none" || resularr[0]["NUSNETSID" + i] == null) {
+					console.log("here!");
+					whichMemberSlotEmptypart1(grp, i+1, emptyarr.concat([i]), resularr, true, callback);
 				} else {
+					console.log('result array: ' + JSON.stringify(resularr));
+					console.log(resularr[0]["NUSNETSID" + i]);
+					console.log("i m here!");
 					whichMemberSlotEmptypart1(grp, i + 1, emptyarr, resularr, true, callback);
 				}
 			}

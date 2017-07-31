@@ -11,6 +11,8 @@ var db_book = new db_boo();
 var t = require('../config/token');
 var db_token = new t();
 
+var cool = require('cool-ascii-faces');
+
 //套路：
 	// db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
  //      if (boo == true) {
@@ -65,6 +67,9 @@ module.exports = function (app,passport) {
         failureRedirect: '/' }));
 
   // routes 
+  app.get('/cool', function(req, res) {
+    res.send(cool());
+  })
 
   app.get('/info', function(req, res) {
     db_book.allBookedTimeslotsFor5Days(function(arrBooked) {
@@ -293,8 +298,8 @@ module.exports = function (app,passport) {
   //if it's join group, check if its in table, if it is, add into the group, delete from the table. 
   app.post('/manageGroup', isLoggedIn, function(req, res) {
           //check if this guy is registered first then if is in a grp 
-          console.log("@#$@$@#$@#$@#$@#$@#$@#$@#$@#$@#$@#$@$@#$");
-          console.log(req);
+          // console.log("@#$@$@#$@#$@#$@#$@#$@#$@#$@#$@#$@#$@$@#$");
+          // console.log(req);
     db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
       if (boo == true) {
         //registered 
@@ -395,6 +400,93 @@ module.exports = function (app,passport) {
     });  
   });
 
+  app.get('/inviteMembers', isLoggedIn, function(req, res) {
+    db_user.hasUserRegistered(req.user.displayName, req.user.NusNetsID, req.user.emails[0].value, function(name, id, email, boo) {
+      if (boo == true) {
+        //registered 
+        db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+          if (bool == true) {
+            //in a group. //check if the group has other empty slots left. 
+            db_user.whichMemberSlotEmpty(grp, function(nullOrArr) {
+              if (nullOrArr == null) {
+                //group does not exist
+              } else {
+                //group exist, and check if nullOrArr == []
+                if (nullOrArr.length == 0) {
+                  //group has 5 ppl. redirect to viewBooking
+                  res.redirect('/viewBooking');
+                } else {
+                  //group is not full yet. render invite page.
+                  res.render('inviteMembers.ejs', {profile:req.user, 
+                                                   groupID:grp,
+                                                   emptySlots:nullOrArr});
+                }
+              }
+            });
+          } else {
+           //not in a group
+            res.redirect('/manageRegister');
+          }
+        });
+      } else {
+       //not registered
+        res.redirect('/register');
+      }
+    });
+  })
+
+  app.post('/manageInvite', isLoggedIn, function(req, res) {
+    //send them emails and ask them to go to joinAGroup
+    // console.log("laalalalallalalaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    // console.log(req.body);
+    // console.log("finishhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+    // laalalalallalalaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    // { member0ID: 'Me',
+    //   member0email: 'e0052753@u.nus.edu',
+    //   member1ID: '',
+    //   member1email: '',
+    //   member2ID: '',
+    //   member2email: '' }
+    // finishhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+    db_user.getUserGroup(req.user.displayName, req.user.NusNetsID, function(idd, grp, bool) {
+      if (bool == true) {
+        //in a group. 
+        var mailList = [];
+        for (var i = 0; i < 6; i++) {
+          if (i < 5) {
+            //first 5 rounds. send emails first.
+            if (req.body["member" + i + "email"] == "" || req.body["member" + i + "email"] == undefined) {
+              ;
+            } else {
+              db_token.createTokenForSomePpl(req.user.displayName, 
+                                             [req.body["member" + i + "ID"]], 
+                                             [req.body["member" + i + 'email']], 
+                                             grp, 
+                                             function(boo) {
+                if (boo == true) {
+                  //all sent
+                  mailList.concat([req.body["member" + i + 'email']]);
+                  ;
+                }
+              })
+            }
+          } else {
+            //last round, render the page.
+            res.render('manageGroup.ejs', 
+                                               {profile:req.user, 
+                                                notified:true, 
+                                                mailList:mailList
+                                               });
+          }
+          
+        } 
+      } else {
+       //not in a group
+        res.redirect('/manageRegister');
+      }
+    });
+  })
+
 /*---------BOOKING AND CANCELLING FEATURES---------------------------------------------------------------------------*/
 
   app.get("/booking", isLoggedIn, function(req,res) {
@@ -450,41 +542,41 @@ module.exports = function (app,passport) {
           if (bool == true) {
             //in a group.
             db_user.IfGroupComplete(grp, function(grpid, bu) {
-	            	if (bu == true) {
-	            		//group is complete
-	            		console.log("headerrrrrrrrrrrrrrrrrrrrrr");
-	            		console.log(req.headers.referer); //http://localhost/booking?room=103&timeslotstart=10&date=Sun%20Jul%2023%202017%2000:00:00%20GMT+0800%20(Malay%20Peninsula%20Standard%20Time)
-	            		var roomnumber = req.headers.referer.split("&")[0].split('=')[1];
-				  		var timeslotstart = req.headers.referer.split("&")[1].split('=')[1];
-				  		var datestr = req.headers.referer.split("&")[2].split('=')[1].split('%20').slice(0,4).join(" ");
-				  		var timeslot = timeslotstart + "TO" + (parseInt(timeslotstart) + 2);
-				  		console.log(roomnumber);
-				  		console.log(timeslotstart);
-				  		console.log(datestr);
-				  		console.log(timeslot);
-				  		db_book.dateFormatFromReq(datestr, function(strWithSpace) {
-	            			db_book.groupBook(grpid, strWithSpace, roomnumber, timeslot, function(bulin) {
-	            				if (bulin == true) {
-	            					//booking made
-	            					var d = new Date();
-	            					res.render('manageBooking.ejs', {success:true, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString(), timeslotstart:timeslotstart+":00:00"});
-	            					//and send emails to everyone in the group
+            	if (bu == true) {
+            		//group is complete
+            		console.log("headerrrrrrrrrrrrrrrrrrrrrr");
+            		console.log(req.headers.referer); //http://localhost/booking?room=103&timeslotstart=10&date=Sun%20Jul%2023%202017%2000:00:00%20GMT+0800%20(Malay%20Peninsula%20Standard%20Time)
+            		var roomnumber = req.headers.referer.split("&")[0].split('=')[1];
+  				  		var timeslotstart = req.headers.referer.split("&")[1].split('=')[1];
+  				  		var datestr = req.headers.referer.split("&")[2].split('=')[1].split('%20').slice(0,4).join(" ");
+  				  		var timeslot = timeslotstart + "TO" + (parseInt(timeslotstart) + 2);
+  				  		console.log(roomnumber);
+  				  		console.log(timeslotstart);
+  				  		console.log(datestr);
+  				  		console.log(timeslot);
+  				  		db_book.dateFormatFromReq(datestr, function(strWithSpace) {
+            			db_book.groupBook(grpid, strWithSpace, roomnumber, timeslot, function(bulin) {
+            				if (bulin == true) {
+            					//booking made
+            					var d = new Date();
+            					res.render('manageBooking.ejs', {success:true, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString(), timeslotstart:timeslotstart+":00:00"});
+            					//and send emails to everyone in the group
 /*trouble!!!!! solve groupBookNotify at db_groupBooking line 521, problem: obtainAllMemberEmailIter*/
-	            					db_book.groupBookNotify(req.user.displayName, grpid, roomnumber, timeslot, datestr);
-	            				} else if (bulin == false) {
-	            					//room occupied
-	            					res.render('manageBooking.ejs', {success:false, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString()})
-	            				}
-	            			})
-	            		})
-	            	} else if (bu == false) {
-	            		//group is incomplete
-	            		res.redirect('/manageRegister');
-	            	} else if (bu == null) {
-	            		//group does not exist
-	            		res.redirect('/manageRegister');
-	            	}
-	        })
+            					db_book.groupBookNotify(req.user.displayName, grpid, roomnumber, timeslot, datestr);
+            				} else if (bulin == false) {
+            					//room occupied
+            					res.render('manageBooking.ejs', {success:false, profile:req.user, groupID:grpid, roomnumber:roomnumber, date: datestr, timeslot:timeslot, decisionTime:d.toString()})
+            				}
+            			})
+            		})
+            	} else if (bu == false) {
+            		//group is incomplete
+            		res.redirect('/manageRegister');
+            	} else if (bu == null) {
+            		//group does not exist
+            		res.redirect('/manageRegister');
+            	}
+	          })
           } else {
           	//not in a group
             res.redirect('/manageRegister');

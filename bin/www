@@ -9,6 +9,7 @@ var debug = require('debug')('nos:server');
 var http = require('http');
 
 
+
 /**
  * Get port from environment and store in Express.
  */
@@ -92,12 +93,8 @@ function onListening() {
 
 var tableRenewal = require('../config/tableRenewal');
 var scheduler = new tableRenewal();
-scheduler.createTableSchedule('0 0 * * *', function(boo){
-  console.log("table created? "+ boo);
-});
-scheduler.dropTableSchedule('1 0 * * *', function(boo){
-  console.log("table dropped? "+ boo);
-});
+scheduler.mendRoomRecordSchedule('1 * * * * *');
+scheduler.dropRedundantRoomRecordSchedule('1 * * * * *');
 
 var de = require('../config/dumpEmail');
 var dumpEmail = new de();

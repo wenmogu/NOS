@@ -12,6 +12,10 @@ var dumpEmail = new de();
 var t = require('./token');
 var token = new t();
 
+
+user.whichMemberSlotEmpty(1714, function(arrOrBoo) {
+	console.log(arrOrBoo);
+})
 // user.updateUserEmail("DUMMYa", "a", 'e0052753@u.nus.edu', function(boo) {
 // 	console.log(boo);
 // })
@@ -180,6 +184,8 @@ groupBooking.allTimeslotsFor5Days(function(ar) {
 // })
 var ct = require('./tableRenewal');
 var tableRenewal = new ct();
+// tableRenewal.mendRoomRecord();
+// tableRenewal.dropRedundantRoomRecord();
 // tableRenewal.dateStringForSomeDay(0, function(str) {
 //   tableRenewal.dateStringForSomeDATE(0, function(strr) {
 //     tableRenewal.createTable(str, strr);
@@ -188,44 +194,44 @@ var tableRenewal = new ct();
 
 
 
-const nodemailer = require ('nodemailer');
+// const nodemailer = require ('nodemailer');
 
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'jlinswenmogu@gmail.com',
-    pass: 'Fattypiggy123'
-  }
-});
+// var transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'jlinswenmogu@gmail.com',
+//     pass: 'Fattypiggy123'
+//   }
+// });
 
-var mailOptions = {
-  from: 'jlinswenmogu@gmail.com',
-  to: "e0032334@u.nus.edu",
-  subject: "punishment for ignoring me",
-  text: '!!!'
-};
+// var mailOptions = {
+//   from: 'jlinswenmogu@gmail.com',
+//   to: "e0032334@u.nus.edu",
+//   subject: "punishment for ignoring me",
+//   text: '!!!'
+// };
 
-function toWai(heart, i) {
-	if (i >= 20) {
-		callback(true);
-	} else {
-		mailOptions.subject = "emmmmm happy dota";
-		mailOptions.text = heart + "❤"
-		setTimeout(function() {
-			transporter.sendMail(mailOptions, function(err, info) {
-				if (err) {
-					console.log(err);
-					callback(false);
-				} else {
-					console.log("mailsent: " + info);
-					toWai(heart + "❤", i + 1);
-				}
-			});
-		}, 3000);
-	}
-}
+// function toWai(heart, i) {
+// 	if (i >= 20) {
+// 		callback(true);
+// 	} else {
+// 		mailOptions.subject = "emmmmm happy dota";
+// 		mailOptions.text = heart + "❤"
+// 		setTimeout(function() {
+// 			transporter.sendMail(mailOptions, function(err, info) {
+// 				if (err) {
+// 					console.log(err);
+// 					callback(false);
+// 				} else {
+// 					console.log("mailsent: " + info);
+// 					toWai(heart + "❤", i + 1);
+// 				}
+// 			});
+// 		}, 3000);
+// 	}
+// }
 
-toWai("", 1);
+// toWai("", 1);
 
 // this.groupBookNotify = function(name, grpid, room, timeslot, date) {
 // 		obtainAllMemberEmailIter(grpid, 1, [], [], function(email) {

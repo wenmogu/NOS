@@ -1,10 +1,10 @@
 1. get ur register page done --done
 2. get ur Group booking page done
 3. get ur Group cancellation page done
-4. write ur api for daily sql export, sql delete and sql create table
+4. write ur api for daily sql export, sql delete and sql create table --done
 	use node schedule  --done
-	use node child process/cross spawn
-	use node mailTransporter and rand-token
+	use node child process/cross spawn --done
+	use node mailTransporter and rand-token --done
 5. write ur api for admin side
 6. write ur admin system
 7. write ur group report api

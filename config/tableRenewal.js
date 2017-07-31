@@ -30,6 +30,104 @@ function wrapper() {
 		});
 	}
 
+	this.mendRoomRecordSchedule = function(timestr) {
+		schedule.scheduleJob(timestr, function() {
+			mendRoomRecord();
+		})
+	}
+
+	this.dropRedundantRoomRecordSchedule = function(timestr) {
+		schedule.scheduleJob(timestr, function() {
+			dropRedundantRoomRecord();
+		})
+	}
+
+	mendRoomRecordPart1 = function(i, callback) {//check from today to 4 days later //0, "", callback
+		if (i < 5) {
+			dateSpaceStringForSomeDay(i, function(spacestr) {
+				dateStringForSomeDay(i, function(datestr) {
+					ifTableExist(spacestr, function(boo) {
+						if (boo == true) {
+							console.log(i);
+							//table exist
+							mendRoomRecordPart1(i + 1, callback);
+						} else {
+							//table doesnt exist, replenish it
+							console.log(i);
+							dateStringForSomeDATE(i, function(dateestr) {
+								createTable(datestr, dateestr);
+								mendRoomRecordPart1(i+1, callback);
+							})
+						}
+					})
+				})
+			})	
+		} else {
+			callback(true);
+		}		
+	}
+
+	mendRoomRecord = function() {
+		mendRoomRecordPart1(0, function(boo) {
+			console.log("if all tables replenished: " + boo);
+		})
+	}
+
+	
+
+	dropRedundantRoomRecordPart1 = function(pastAndFuture, callback) {//integer:-10, callback
+		if (pastAndFuture > 10 || pastAndFuture < -10) {
+			callback(true);
+		} else if (pastAndFuture <= 10 && pastAndFuture >= 5) {
+			//checking from -10 to 0 and 5 to 10
+			dateSpaceStringForSomeDay(pastAndFuture, function(spacestr) {
+				console.log(spacestr);
+				dateStringForSomeDay(pastAndFuture, function(datestr) {
+					ifTableExist(spacestr, function(boo) {
+						if (boo == true) {
+							//table exist, drop them
+							//console.log(pastAndFuture);
+							dropTable(datestr);
+							dropRedundantRoomRecordPart1(pastAndFuture + 1, callback);
+						} else {
+							//table does not exist, check the next table
+							//console.log(pastAndFuture);
+							dropRedundantRoomRecordPart1(pastAndFuture + 1, callback);
+						}
+					})
+				})
+			})
+		} else if (pastAndFuture <= -1 && pastAndFuture >= -10) {
+			//checking from -10 to 0 and 5 to 10
+			dateSpaceStringForSomeDay(pastAndFuture, function(spacestr) {
+				console.log(spacestr);
+				dateStringForSomeDay(pastAndFuture, function(datestr) {
+					ifTableExist(spacestr, function(boo) {
+						if (boo == true) {
+							//table exist, drop them
+							//console.log(pastAndFuture);
+							dropTable(datestr);
+							dropRedundantRoomRecordPart1(pastAndFuture + 1, callback);
+						} else {
+							//table does not exist, check the next table
+							//console.log(pastAndFuture);
+							dropRedundantRoomRecordPart1(pastAndFuture + 1, callback);
+						}
+					})
+				})
+			})
+		} else {
+			// in between the acceptable range, so just pass, dont check
+			dropRedundantRoomRecordPart1(pastAndFuture + 1, callback);
+		}
+	}
+
+	dropRedundantRoomRecord = function() {
+		dropRedundantRoomRecordPart1(-10, function(boo) {
+			console.log(boo);
+		})
+	}
+
 	dateStringForCreateTable = function(callback) { //string of 4 days later
 		var date = new Date();
 		var time = date.getTime();
@@ -52,7 +150,7 @@ function wrapper() {
 		callback(result);
 	}
 
-	this.dateStringForSomeDATE = function(int, callback) {
+	dateStringForSomeDATE = function(int, callback) {
 		var date = new Date();
 		var time = date.getTime();
 		date.setTime(time + 86400000 * int);
@@ -66,12 +164,34 @@ function wrapper() {
 		callback(result);
 	}
 
-	this.dateStringForSomeDay = function(int, callback) {//for testing purpose
+	dateStringForSomeDay = function(int, callback) {//count start from today //_output: _tue_jul_23_2017
 		var date = new Date();
 		var time = date.getTime();
 		date.setTime(time + 86400000 * int);
 		var str = (" " + date.toDateString()).replace(/ /g, "_");
+		console.log(str);
 		callback(str);
+	}
+
+	dateSpaceStringForSomeDayPart1 = function(int, callback) {//callback(a integer number)
+		var date = new Date();
+		var time = date.getTime();
+		callback(date.setTime(time + 86400000 * int));
+	}
+
+	dateSpaceStringForSomeDay = function(int, callback) {
+		dateSpaceStringForSomeDayPart1(int, function(time) {
+			var d = new Date();
+			d.setTime(time);
+			var arr = d.toLocaleDateString().split('/');
+			var ar = [];
+			ar[0] = arr[1];
+			ar[1] = arr[0];
+			ar[2] = arr[2];
+			var result = ar.toString().replace(/,/g, " ");
+			console.log("result: " + result);
+			callback(result);
+		})
 	}
 
 	createTableStatement = function(str, callback) {
@@ -116,7 +236,7 @@ function wrapper() {
 	// 	});
 	// }
 
-	createTable = function(datestr, DATEstr) {
+	createTable = function(datestr, DATEstr) {//_tue_jul_32_2017, 2017-2-23
 			createTableStatement(datestr, function(tableStatement) {
 				createTableQuery(tableStatement, datestr, function(datee) {
 					createTableContent(datee, 6, 0, DATEstr, function(datestrr) {
@@ -151,7 +271,25 @@ function wrapper() {
 			});
 	}
 
-/*------------------------------------------------Room_record api below-------------------------------------------------*/
+/*------------------------------------------------check if table exist for that day-------------------------------------------------*/
+
+	ifTableExist = function(str, callback) { //dd mm year
+		processDateWithUnderscore(str, function(datestr) {
+			connection.query("select * from ??", ["Room_record" + datestr], function(err, resul) {
+				if (err) {
+					//the table doesnt exist
+					console.log("table doesnt exist");
+					callback(false);
+				} else {
+					//the table exist
+					console.log("table exist");
+					callback(true);
+				}
+			})
+		})
+	}
+
+
 /*----------------------------------------------------------------------------------*/
 
 
@@ -171,9 +309,6 @@ function wrapper() {
 			callback(("_" + d.toDateString()).replace(/ /g, "_"));
 		});
 	}
-
-	
-
 }
 
 module.exports = wrapper;
